@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ModernCart Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0E14;
+    --ink-2:#12161F;
+    --bone:#F5F1E8;
+    --bone-dim:#C9C4B6;
+    --brass:#C89B3C;
+    --brass-dim:#8A6B2A;
+    --sage:#6B8F71;
+    --white:#FFFFFF;
+    --border:rgba(245,241,232,0.12);
+    --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--ink);color:var(--bone);font-family:'Inter',sans-serif;overflow-x:hidden;width:100%;}
+  img,canvas{max-width:100%;}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;background:none;border:none;color:inherit;cursor:pointer;}
+  [hidden]{display:none !important;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:200;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 5vw;
+    background:linear-gradient(to bottom, rgba(11,14,20,0.94), rgba(11,14,20,0.7));
+    backdrop-filter:blur(6px);border-bottom:1px solid var(--border);
+  }
+  .logo{font-size:19px;font-weight:600;letter-spacing:0.5px;display:flex;align-items:center;gap:8px;white-space:nowrap;cursor:pointer;}
+  .logo .dot{width:9px;height:9px;border-radius:50%;background:var(--brass);display:inline-block;flex-shrink:0;}
+  .nav-links{display:flex;gap:30px;font-size:14px;color:var(--bone-dim);}
+  .nav-links button{font-size:14px;color:var(--bone-dim);padding:4px 0;border-bottom:1px solid transparent;}
+  .nav-links button:hover, .nav-links button.active{color:var(--brass);border-color:var(--brass);}
+  .nav-actions{display:flex;align-items:center;gap:12px;}
+  .icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;flex-shrink:0;position:relative;color:var(--bone);}
+  .icon-btn:hover{border-color:var(--brass);}
+  .icon-btn svg{width:16px;height:16px;}
+  .cart-badge{
+    position:absolute;top:-6px;right:-6px;background:var(--brass);color:var(--ink);
+    font-size:10px;font-weight:600;min-width:17px;height:17px;border-radius:999px;
+    display:flex;align-items:center;justify-content:center;padding:0 4px;font-family:'JetBrains Mono',monospace;
+  }
+  .icon-btn.bump{animation:bump .35s ease;}
+  @keyframes bump{0%{transform:scale(1);}45%{transform:scale(1.28);}100%{transform:scale(1);}}
+  .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;flex-shrink:0;}
+  .burger span{width:20px;height:2px;background:var(--bone);display:block;}
+  .mobile-menu{
+    display:none;position:fixed;top:66px;left:0;right:0;z-index:190;
+    background:var(--ink-2);border-bottom:1px solid var(--border);
+    padding:8px 5vw 20px;flex-direction:column;gap:2px;
+  }
+  .mobile-menu.open{display:flex;}
+  .mobile-menu button{width:100%;text-align:left;padding:12px 0;font-size:15px;color:var(--bone-dim);border-bottom:1px solid var(--border);}
+
+  /* ---------- INTRO ---------- */
+  .intro{padding:130px 5vw 40px;}
+  .eyebrow{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--sage);display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .eyebrow::before{content:'';width:26px;height:1px;background:var(--sage);flex-shrink:0;}
+  .intro h1{font-size:clamp(1.9rem,4.6vw,3.6rem);line-height:1.08;font-weight:600;letter-spacing:-1px;max-width:760px;}
+  .intro h1 em{font-style:normal;color:var(--brass);}
+  .intro p{margin-top:20px;font-size:16px;color:var(--bone-dim);max-width:520px;line-height:1.6;}
+  .hero-cta{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--brass);color:var(--ink);padding:14px 26px;border-radius:999px;font-weight:600;font-size:14px;
+    display:inline-flex;align-items:center;gap:10px;transition:transform .2s ease;border:1px solid var(--brass);white-space:nowrap;
+  }
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{
+    padding:14px 22px;border-radius:999px;border:1px solid var(--border);font-size:14px;color:var(--bone-dim);
+    transition:border-color .2s, color .2s;white-space:nowrap;
+  }
+  .btn-ghost:hover{border-color:var(--bone-dim);color:var(--bone);}
+
+  /* ---------- SECTION HEAD ---------- */
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:36px;flex-wrap:wrap;padding:0 5vw;}
+  .sec-head h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:600;letter-spacing:-0.5px;}
+  .sec-head p{color:var(--bone-dim);font-size:14px;max-width:340px;}
+
+  /* ---------- FEATURED 3D PRODUCTS ---------- */
+  .product-grid{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:20px;padding:0 5vw 100px;}
+  .p-card{background:var(--ink-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;min-width:0;transition:border-color .3s ease;}
+  .p-card:hover{border-color:var(--brass-dim);}
+  .p-index{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--brass);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .p-index .badge{background:rgba(245,241,232,0.08);color:var(--bone-dim);padding:4px 9px;border-radius:999px;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.5px;text-transform:uppercase;}
+  .canvas-wrap{position:relative;width:100%;aspect-ratio:1/1;border-radius:10px;background:radial-gradient(circle at 30% 25%, #1c2129, #0a0d12);overflow:hidden;touch-action:pan-y;}
+  .canvas-wrap canvas{width:100%!important;height:100%!important;display:block;cursor:grab;}
+  .canvas-wrap:active canvas{cursor:grabbing;}
+  .drag-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-dim);opacity:.65;pointer-events:none;white-space:nowrap;}
+  .p-card h3{font-size:15px;font-weight:500;margin:14px 0 4px;}
+  .p-card .cat{font-size:12px;color:var(--bone-dim);margin-bottom:12px;}
+  .p-row{display:flex;justify-content:space-between;align-items:center;margin-top:auto;}
+  .p-price{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--brass);}
+  .add{
+    width:32px;height:32px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+    font-size:16px;flex-shrink:0;transition:background .2s, color .2s, transform .15s;
+  }
+  .p-card:hover .add, .flat-card:hover .add{background:var(--brass);color:var(--ink);border-color:var(--brass);}
+  .add:active{transform:scale(0.85);}
+
+  /* ---------- MARQUEE ---------- */
+  .marquee{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:16px 0;overflow:hidden;white-space:nowrap;}
+  .marquee-track{display:inline-flex;gap:50px;animation:scroll 24s linear infinite;}
+  .marquee span{font-size:13px;color:var(--bone-dim);letter-spacing:1px;text-transform:uppercase;}
+  .marquee span b{color:var(--brass);}
+  @keyframes scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+  /* ---------- MORE SHOP / FILTERS ---------- */
+  section.pad{padding:90px 5vw;}
+  .filters{display:flex;gap:10px;margin-bottom:32px;flex-wrap:wrap;}
+  .chip{
+    padding:9px 18px;border-radius:999px;border:1px solid var(--border);font-size:13px;color:var(--bone-dim);
+    transition:border-color .2s, color .2s, background .2s;
+  }
+  .chip:hover{border-color:var(--bone-dim);color:var(--bone);}
+  .chip.active{background:var(--brass);color:var(--ink);border-color:var(--brass);}
+  .flat-grid{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:18px;}
+  .flat-card{background:var(--ink-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;min-width:0;transition:transform .3s ease, border-color .3s ease;}
+  .flat-card:hover{transform:translateY(-4px);border-color:var(--brass-dim);}
+  .flat-visual{aspect-ratio:1/1;border-radius:10px;margin-bottom:14px;background:radial-gradient(circle at 30% 30%, #1c2129, #0c0f15);display:flex;align-items:center;justify-content:center;position:relative;}
+  .flat-visual .shape{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--brass),var(--brass-dim));transform:rotate(20deg);}
+  .flat-card .tag{position:absolute;top:12px;left:12px;font-size:9px;letter-spacing:1px;text-transform:uppercase;background:rgba(245,241,232,0.1);padding:4px 9px;border-radius:999px;color:var(--bone-dim);}
+  .flat-card h4{font-size:14px;font-weight:500;margin-bottom:4px;}
+  .flat-card .cat{font-size:11px;color:var(--bone-dim);margin-bottom:12px;}
+  .empty-note{color:var(--bone-dim);font-size:14px;padding:20px 0;}
+
+  /* ---------- FEATURE STRIP ---------- */
+  .features{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+  .feature{background:var(--ink);padding:32px;min-width:0;}
+  .feature .n{font-family:'JetBrains Mono',monospace;color:var(--brass);font-size:13px;margin-bottom:14px;}
+  .feature h3{font-size:18px;font-weight:500;margin-bottom:8px;}
+  .feature p{color:var(--bone-dim);font-size:13px;line-height:1.6;}
+
+  /* ---------- CTA BAND ---------- */
+  .cta-band{margin:0 5vw 100px;padding:56px 40px;border-radius:20px;background:linear-gradient(120deg,#161B24,#0C0F15);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap;}
+  .cta-band h2{font-size:clamp(1.4rem,2.6vw,2rem);max-width:440px;font-weight:600;letter-spacing:-0.5px;}
+  .cta-band p{color:var(--bone-dim);margin-top:10px;max-width:380px;font-size:13px;}
+  .cta-form{display:flex;gap:10px;flex-wrap:wrap;}
+  .cta-form input{
+    background:var(--ink);border:1px solid var(--border);border-radius:999px;padding:13px 18px;color:var(--bone);
+    font-size:14px;font-family:'Inter',sans-serif;min-width:220px;
+  }
+  .cta-form input:focus{outline:none;border-color:var(--brass);}
+
+  /* ---------- ABOUT / CONTACT / PRODUCT PAGES ---------- */
+  .page{padding:150px 5vw 100px;max-width:840px;}
+  .page .eyebrow{margin-bottom:24px;}
+  .page h1{font-size:clamp(2rem,4.4vw,3rem);font-weight:600;letter-spacing:-1px;margin-bottom:22px;}
+  .page p{color:var(--bone-dim);font-size:16px;line-height:1.7;margin-bottom:18px;max-width:640px;}
+  .about-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:40px;}
+  .about-stat{background:var(--ink-2);padding:28px;}
+  .about-stat .num{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:600;color:var(--brass);}
+  .about-stat .lab{font-size:12px;color:var(--bone-dim);margin-top:6px;}
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:20px;}
+  .contact-form{display:flex;flex-direction:column;gap:14px;}
+  .contact-form input,.contact-form textarea{
+    background:var(--ink-2);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--bone);
+    font-family:'Inter',sans-serif;font-size:14px;resize:vertical;
+  }
+  .contact-form input:focus,.contact-form textarea:focus{outline:none;border-color:var(--brass);}
+  .contact-info{display:flex;flex-direction:column;gap:18px;}
+  .contact-row{display:flex;align-items:center;gap:14px;}
+  .contact-row .ic{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .contact-row .ic svg{width:16px;height:16px;}
+  .contact-row .t{font-size:12px;color:var(--bone-dim);}
+  .contact-row .v{font-size:15px;}
+  .contact-row a.v:hover{color:var(--brass);}
+  .product-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:16px;align-items:start;}
+  @media (max-width:700px){ .contact-grid{grid-template-columns:1fr;} .about-grid{grid-template-columns:1fr;} .product-detail-grid{grid-template-columns:1fr;} }
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:50px 5vw 34px;border-top:1px solid var(--border);}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:50px;}
+  footer h4{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--bone-dim);margin-bottom:16px;font-weight:500;}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  footer ul button, footer ul a{color:var(--bone-dim);font-size:13px;}
+  footer ul button:hover, footer ul a:hover{color:var(--brass);}
+  footer .brand-col p{color:var(--bone-dim);font-size:13px;max-width:260px;margin-top:12px;line-height:1.6;}
+  .foot-social{display:flex;gap:10px;margin-top:16px;}
+  .foot-bottom{display:flex;justify-content:space-between;padding-top:22px;border-top:1px solid var(--border);font-size:12px;color:var(--bone-dim);flex-wrap:wrap;gap:10px;}
+
+  /* ---------- CART DRAWER ---------- */
+  .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s ease;}
+  .cart-overlay.open{opacity:1;pointer-events:auto;}
+  .cart-drawer{
+    position:fixed;top:0;right:0;bottom:0;width:min(400px,90vw);background:var(--ink-2);z-index:301;
+    border-left:1px solid var(--border);transform:translateX(100%);transition:transform .35s ease;
+    display:flex;flex-direction:column;padding:24px;
+  }
+  .cart-drawer.open{transform:translateX(0);}
+  .cart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+  .cart-head h3{font-size:18px;font-weight:500;}
+  .cart-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .cart-items{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+  .cart-empty{color:var(--bone-dim);font-size:14px;padding:40px 0;text-align:center;}
+  .cart-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+  .cart-item .ci-name{font-size:14px;margin-bottom:4px;}
+  .cart-item .ci-meta{font-size:12px;color:var(--bone-dim);}
+  .cart-item .ci-qty{display:flex;align-items:center;gap:8px;}
+  .cart-item .ci-qty button{width:22px;height:22px;border:1px solid var(--border);border-radius:6px;font-size:13px;line-height:1;}
+  .cart-item .ci-remove{color:var(--bone-dim);font-size:12px;text-decoration:underline;margin-top:6px;}
+  .cart-item .ci-remove:hover{color:var(--brass);}
+  .cart-foot{border-top:1px solid var(--border);padding-top:18px;margin-top:18px;}
+  .cart-sub{display:flex;justify-content:space-between;font-size:15px;margin-bottom:16px;}
+  .cart-sub .amt{font-family:'JetBrains Mono',monospace;color:var(--brass);}
+
+  /* ---------- FLY-TO-CART DOT ---------- */
+  .fly-dot{
+    position:fixed;width:16px;height:16px;border-radius:50%;background:var(--brass);z-index:500;
+    pointer-events:none;transition:transform .6s cubic-bezier(.3,.6,.4,1), opacity .6s ease;
+  }
+
+  /* ---------- TOAST ---------- */
+  #toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;align-items:center;}
+  .toast{
+    background:var(--bone);color:var(--ink);padding:12px 20px;border-radius:999px;font-size:13px;font-weight:500;
+    box-shadow:0 12px 30px rgba(0,0,0,0.35);opacity:0;transform:translateY(10px);transition:opacity .25s ease, transform .25s ease;
+    white-space:nowrap;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:1100px){
+    .product-grid{grid-template-columns:repeat(2, minmax(0,1fr));}
+    .flat-grid{grid-template-columns:repeat(2, minmax(0,1fr));}
+  }
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .burger{display:flex;}
+    .features{grid-template-columns:1fr;}
+    .foot-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:560px){
+    .product-grid{grid-template-columns:1fr;}
+    .flat-grid{grid-template-columns:1fr;}
+    section.pad{padding:60px 6vw;}
+    .intro{padding:110px 6vw 30px;}
+    .page{padding:120px 6vw 70px;}
+    .cta-band{padding:36px 22px;}
+    .foot-grid{grid-template-columns:1fr;gap:24px;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <button class="logo" onclick="navigate('home')"><span class="dot"></span>ModernCart</button>
+  <div class="nav-links">
+    <button onclick="navigate('home'); scrollToShop();" class="nav-btn" data-nav="home">Shop</button>
+    <button onclick="navigate('about')" class="nav-btn" data-nav="about">About us</button>
+    <button onclick="navigate('contact')" class="nav-btn" data-nav="contact">Contact us</button>
+  </div>
+  <div class="nav-actions">
+    <a class="icon-btn" href="https://www.instagram.com/moderncart.store/" target="_blank" rel="noopener" aria-label="ModernCart Store on Instagram" title="@moderncart.store on Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg>
+    </a>
+    <button class="icon-btn" id="cart-icon-btn" onclick="toggleCart()" aria-label="Open cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h2l2.2 12.2a2 2 0 0 0 2 1.8h7.6a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg>
+      <span class="cart-badge" id="cart-badge" hidden>0</span>
+    </button>
+    <div class="burger" id="burger" onclick="document.getElementById('mobileMenu').classList.toggle('open')"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <button onclick="navigate('home'); scrollToShop(); closeMobileMenu();">Shop</button>
+  <button onclick="navigate('about'); closeMobileMenu();">About us</button>
+  <button onclick="navigate('contact'); closeMobileMenu();">Contact us</button>
+</div>
+
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <h3>Your cart</h3>
+    <button class="cart-close" onclick="toggleCart()">&#10005;</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot">
+    <div class="cart-sub"><span>Subtotal</span><span class="amt" id="cartSubtotal">₹0.00</span></div>
+    <button class="btn-primary" style="width:100%;justify-content:center;" onclick="checkout()">Checkout</button>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- ============ HOME VIEW ============ -->
+<main id="view-home">
+  <div class="intro">
+    <div class="eyebrow">Vishal Kashyap presents</div>
+    <h1>Quality products and<br>smart value, in <em> our store</em>,<br>checked for you.</h1>
+    <p>ModernCart Store brings curated goods, trending items, and household pieces — drag any product below to see it from every angle, right on this page.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="scrollToShop()">Order Now&nbsp;→</button>
+<button class="btn-ghost" onclick="scrollToMore('all')">Explore store</button>
+    </div>
+  </div>
+
+  <div class="sec-head" id="shop">
+    <h2>Featured — rotate to explore</h2>
+    <p>Drag left or right on any product to spin it. Works with touch too.</p>
+  </div>
+  <div class="product-grid" id="featured-grid"></div>
+
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>Free shipping over <b>₹40</b></span>
+      <span>1-year <b>warranty</b></span>
+      <span>Fast charging <b>certified</b></span>
+      <span>Easy <b>returns</b></span>
+      <span>Free shipping over <b>₹40</b></span>
+      <span>1-year <b>warranty</b></span>
+      <span>Fast charging <b>certified</b></span>
+      <span>Easy <b>returns</b></span>
+    </div>
+  </div>
+
+  <section class="pad" id="more-shop">
+    <div class="sec-head" style="padding:0;">
+      <h2>More from the shop</h2>
+      <p>The full range across cables, watches, and home decor.</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="flat-grid" id="flat-grid"></div>
+  </section>
+
+  <section class="pad" style="padding-top:0;">
+    <div class="features">
+      <div class="feature">
+        <div class="n">01</div>
+        <h3>Built for daily use</h3>
+        <p>Braided cables and reinforced connectors tested for thousands of bends before they ship.</p>
+      </div>
+      <div class="feature">
+        <div class="n">02</div>
+        <h3>See it before you buy it</h3>
+        <p>Every featured product spins in 3D so you know exactly what's arriving at your door.</p>
+      </div>
+      <div class="feature">
+        <div class="n">03</div>
+        <h3>One year, no questions</h3>
+        <p>Full warranty on electronics, and easy 30-day returns on every home decor piece.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div>
+      <h2>Get 15% off your first order</h2>
+      <p>Join the list for early access to new drops in cables, watches, and decor.</p>
+    </div>
+    <form class="cta-form" onsubmit="return joinList(event)">
+      <input type="email" placeholder="you@email.com" required>
+      <button type="submit" class="btn-primary">Join the list →</button>
+    </form>
+  </section>
+</main>
+
+<!-- ============ ABOUT VIEW ============ -->
+<main id="view-about" class="page" hidden>
+  <div class="eyebrow">About ModernCart</div>
+<h1>An intentional store, run properly.</h1>
+<h2 style="font-size: 20px; font-weight: 500; margin-top: 30px; margin-bottom: 12px; color: var(--bone);">Our Story</h2>
+<p><span style="color: var(--brass); font-weight: 600;">ModernCart</span> started with a simple, everyday frustration: ordering products online often feels like a gamble. Most items look flawless in edited photos, but look completely different when they finally show up at your front door. We believe shopping online should be completely transparent. So, we built a digital storefront where you don't have to guess. By integrating interactive 3D modeling directly into our collections, you can completely rotate, inspect, and evaluate every trending piece from every angle before you buy it. No surprises, no guesswork—just exactly what you expected.</p>
+  
+<p>The store is personally run by Vishal Kashyap out of Delhi. Instead of trying to sell thousands of generic items averagely, <span style="color: var(--brass); font-weight: 600;">ModernCart</span> focuses entirely on sourcing a highly curated selection of products done exceptionally well. We track what's relevant right now, thoroughly testing every single item to ensure it balances striking design with genuine, long-lasting durability.</p>
+<div class="about-grid">
+    <div class="about-stat"><div class="num">3</div><div class="lab">Core categories — cables, watches, decor</div></div>
+    <div class="about-stat"><div class="num">1yr</div><div class="lab">Warranty on all electronics</div></div>
+    <div class="about-stat"><div class="num">30d</div><div class="lab">Easy returns on decor</div></div>
+  </div>
+</main>
+
+<!-- ============ CONTACT VIEW ============ -->
+<main id="view-contact" class="page" hidden>
+  <div class="eyebrow">Get in touch</div>
+  <h1>Contact us</h1>
+  <p>Questions about an order, a product, or a bulk request — send a note and we'll get back to you.</p>
+  <div class="contact-grid">
+    <form class="contact-form" onsubmit="return sendMessage(event)">
+      <input type="text" placeholder="Your name" required>
+      <input type="email" placeholder="Your email" required>
+      <textarea placeholder="Your message" rows="5" required></textarea>
+      <button type="submit" class="btn-primary" style="justify-content:center;">Send message</button>
+    </form>
+    <div class="contact-info">
+      <div class="contact-row">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h18v14H3z"/><path d="M3 5l9 7 9-7"/></svg></div>
+        <div><div class="t">Email</div><a class="v" href="mailto:hello@moderncart.store">hello@moderncart.store</a></div>
+      </div>
+      <div class="contact-row">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg></div>
+        <div><div class="t">Instagram</div><a class="v" href="https://www.instagram.com/moderncart.store/" target="_blank" rel="noopener">@moderncart.store</a></div>
+      </div>
+      <div class="contact-row">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div><div class="t">Based in</div><div class="v">Delhi, India</div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ============ PRODUCT DETAIL VIEW ============ -->
+<main id="view-product" class="page" hidden>
+  <div id="product-detail-content"></div>
+</main>
+
+<footer>
+  <div class="foot-grid">
+    <div class="brand-col">
+      <div class="logo" style="cursor:default;"><span class="dot"></span>ModernCart</div>
+      <p>A curated space by Vishal Kashyap. Delivering minimal tech essentials and intentional home goods designed to elevate your daily routine.</p>
+      <div class="foot-social">
+        <a class="icon-btn" href="https://www.instagram.com/moderncart.store/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg>
+        </a>
+      </div>
+    </div>
+    <div>
+      <h4>Shop</h4>
+      <ul>
+        <li><button onclick="navigate('home'); scrollToShop();">Featured</button></li>
+        <li><button onclick="scrollToMore('cables')">Cables</button></li>
+        <li><button onclick="scrollToMore('watches')">Watches</button></li>
+        <li><button onclick="scrollToMore('decor')">Home decor</button></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><button onclick="navigate('about')">About us</button></li>
+        <li><button onclick="navigate('contact')">Contact us</button></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Support</h4>
+      <ul>
+        <li><a href="mailto:hello@moderncart.store">Email support</a></li>
+        <li><button onclick="navigate('contact')">Returns</button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 ModernCart Store. All rights reserved.</span>
+    <span>Delhi · Made with care</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  /* ================= NAVIGATION / SPA ROUTING ================= */
+  /* Routing now lives in the URL hash (#about, #contact, #product/slug) so a
+     browser refresh lands back on the same page instead of resetting to home. */
+  const ALL_VIEWS = ['home','about','contact','product'];
+
+  function renderView(view){
+    ALL_VIEWS.forEach(v=>{
+      const el = document.getElementById('view-'+v);
+      if(el) el.hidden = (v!==view);
+    });
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.nav === (view==='product' ? 'home' : view));
+    });
+    window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+  }
+
+  function navigate(view){
+    const target = view === 'home' ? '' : view;
+    if(window.location.hash.replace('#','') === target){
+      // hash isn't changing (already here) -> hashchange won't fire, so render directly
+      renderView(view);
+    } else {
+      window.location.hash = target;
+    }
+  }
+
+  function slugify(str){
+    return String(str).toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  }
+
+  function goToProduct(slug){
+    window.location.hash = 'product/' + slug;
+  }
+
+  function routeFromHash(){
+    const raw = decodeURIComponent(window.location.hash.replace(/^#/,''));
+    if(raw.startsWith('product/')){
+      renderProductPage(raw.slice('product/'.length));
+    } else if(raw === 'about' || raw === 'contact'){
+      renderView(raw);
+    } else {
+      renderView('home');
+    }
+  }
+  window.addEventListener('hashchange', routeFromHash);
+
+  function closeMobileMenu(){ document.getElementById('mobileMenu').classList.remove('open'); }
+  function scrollToShop(){ setTimeout(()=>document.getElementById('shop').scrollIntoView({behavior:'smooth'}), 30); }
+  function scrollToMore(cat){
+    navigate('home');
+    setTimeout(()=>{
+      document.getElementById('more-shop').scrollIntoView({behavior:'smooth'});
+      setFilter(cat);
+    }, 30);
+  }
+
+  /* ================= TOAST ================= */
+  function showToast(msg){
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    c.appendChild(t);
+    requestAnimationFrame(()=>t.classList.add('show'));
+    setTimeout(()=>{
+      t.classList.remove('show');
+      setTimeout(()=>t.remove(), 300);
+    }, 2200);
+  }
+
+  function joinList(e){
+    e.preventDefault();
+    showToast("You're on the list — check your inbox for 15% off");
+    e.target.reset();
+    return false;
+  }
+  function sendMessage(e){
+    e.preventDefault();
+    showToast("Message sent — we'll reply soon");
+    e.target.reset();
+    return false;
+  }
+
+ /* ================= CART ================= */
+ let cart = JSON.parse(localStorage.getItem('modernCartData')) || [];
+
+  function toggleCart(){
+    document.getElementById('cartDrawer').classList.toggle('open');
+    document.getElementById('cartOverlay').classList.toggle('open');
+  }
+
+  function flyToCart(sourceEl){
+    const cartIcon = document.getElementById('cart-icon-btn');
+    const startRect = sourceEl.getBoundingClientRect();
+    const endRect = cartIcon.getBoundingClientRect();
+    const dot = document.createElement('div');
+    dot.className = 'fly-dot';
+    const startX = startRect.left + startRect.width/2;
+    const startY = startRect.top + startRect.height/2;
+    dot.style.left = startX + 'px';
+    dot.style.top = startY + 'px';
+    document.body.appendChild(dot);
+    const endX = endRect.left + endRect.width/2;
+    const endY = endRect.top + endRect.height/2;
+    requestAnimationFrame(()=>{
+      // FIXED: Swapped out the literal '₹' syntax error for proper template literals '${}' so calculation functions correctly
+      dot.style.transform = `translate(${endX-startX}px, ${endY-startY}px) scale(0.25)`;
+      dot.style.opacity = '0';
+    });
+    setTimeout(()=>{
+      dot.remove();
+      cartIcon.classList.add('bump');
+      setTimeout(()=>cartIcon.classList.remove('bump'), 350);
+    }, 600);
+  }
+
+ function addToCart(name, priceStr, evt){
+    if(evt && evt.currentTarget) flyToCart(evt.currentTarget);
+    
+    // Strips both ₹ and $ symbols cleanly so math calculations never crash
+    const price = parseFloat(priceStr.replace(/[₹$]/g, ''));
+    const existing = cart.find(i=>i.name===name);
+    if(existing){ existing.qty += 1; } else { cart.push({name, price, qty:1}); }
+    
+    // UPDATED: Saves items to browser memory array
+    localStorage.setItem('modernCartData', JSON.stringify(cart));
+    updateCartUI();
+    showToast(name + ' added to cart');
+  }
+
+  function changeQty(name, delta){
+    const item = cart.find(i=>i.name===name);
+    if(!item) return;
+    item.qty += delta;
+    if(item.qty <= 0) cart = cart.filter(i=>i.name!==name);
+    
+    // UPDATED: Saves quantity modifications to browser memory array
+    localStorage.setItem('modernCartData', JSON.stringify(cart));
+    updateCartUI();
+  }
+  
+  function removeItem(name){
+    cart = cart.filter(i=>i.name!==name);
+    
+    // UPDATED: Saves item removals to browser memory array
+    localStorage.setItem('modernCartData', JSON.stringify(cart));
+    updateCartUI();
+  }
+  
+  function checkout(){
+    if(cart.length===0){ showToast('Your cart is empty'); return; }
+    showToast('Checkout is a demo — order not actually placed');
+  }
+
+  function updateCartUI(){
+    const totalQty = cart.reduce((s,i)=>s+i.qty,0);
+    const badge = document.getElementById('cart-badge');
+    if(badge) {
+      badge.textContent = totalQty;
+      badge.hidden = totalQty === 0;
+    }
+
+    const itemsEl = document.getElementById('cartItems');
+    if(!itemsEl) return; // Guard clause to protect the runtime thread execution during canvas setups
+
+    if(cart.length===0){
+      itemsEl.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
+    } else {
+      itemsEl.innerHTML = cart.map(i=>`
+        <div class="cart-item">
+          <div>
+            <div class="ci-name">${i.name}</div>
+            <div class="ci-meta">₹${Number(i.price).toLocaleString('en-IN')} each</div>
+            <div class="ci-remove" onclick="removeItem('${i.name.replace(/'/g,"\\'")}')">Remove</div>
+          </div>
+          <div class="ci-qty">
+            <button onclick="changeQty('${i.name.replace(/'/g,"\\'")}', -1)">−</button>
+            <span class="mono">${i.qty}</span>
+            <button onclick="changeQty('${i.name.replace(/'/g,"\\'")}', 1)">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    const subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
+    const subtotalEl = document.getElementById('cartSubtotal');
+    if(subtotalEl) subtotalEl.textContent = '₹' + subtotal.toLocaleString('en-IN');
+  }
+
+  // UPDATED: Wrapped within event listener block to prevent crashing layout nodes
+  window.addEventListener('DOMContentLoaded', () => {
+    updateCartUI();
+  });
+
+  /* ================= FEATURED 3D PRODUCTS ================= */
+  const featured = [
+    { name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"₹14.99",
+      build: brassMat => {
+        const g = new THREE.Group();
+        const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
+        const curve = new THREE.CatmullRomCurve3([
+          new THREE.Vector3(-1.3,-0.5,0), new THREE.Vector3(-0.5,0.6,0.3),
+          new THREE.Vector3(0.4,-0.5,-0.3), new THREE.Vector3(1.3,0.4,0)
+        ]);
+        g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.14, 16, false), dark));
+        [-1.3,1.3].forEach(x=>{
+          const conn = new THREE.Mesh(new THREE.BoxGeometry(0.34,0.2,0.16), brassMat);
+          conn.position.set(x, x<0?-0.5:0.4, 0);
+          g.add(conn);
+        });
+        return g;
+      }
+    },
+    { name:"Smartwatch Pro", cat:"watches", catLabel:"Smartwatches", price:"₹89.00",
+      build: brassMat => {
+        const g = new THREE.Group();
+        const dark = new THREE.MeshStandardMaterial({color:0x14171f, metalness:0.5, roughness:0.3});
+        const band = new THREE.MeshStandardMaterial({color:0x2a2f3a, metalness:0.2, roughness:0.7});
+        const face = new THREE.Mesh(new THREE.CylinderGeometry(0.85,0.85,0.22,48), dark);
+        face.rotation.x = Math.PI/2; g.add(face);
+        const bezel = new THREE.Mesh(new THREE.TorusGeometry(0.85,0.05,16,48), brassMat);
+        bezel.rotation.x = Math.PI/2; g.add(bezel);
+        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.08,0.16,16), brassMat);
+        crown.rotation.z = Math.PI/2; crown.position.set(0.9,0,0); g.add(crown);
+        [1.15,-1.15].forEach(y=>{
+          const strap = new THREE.Mesh(new THREE.BoxGeometry(0.55,0.55,0.1), band);
+          strap.position.set(0,y,0); g.add(strap);
+        });
+        return g;
+      }
+    },
+    { name:"Ceramic Table Vase", cat:"decor", catLabel:"Home decor", price:"₹32.00",
+      build: brassMat => {
+        const g = new THREE.Group();
+        const ceramic = new THREE.MeshStandardMaterial({color:0xEDE7DA, metalness:0.05, roughness:0.6});
+        const points = [];
+        for(let i=0;i<=10;i++){
+          const t = i/10;
+          const r = 0.35 + Math.sin(t*Math.PI)*0.5 - t*0.15;
+          points.push(new THREE.Vector2(Math.max(r,0.22), t*1.8 - 0.9));
+        }
+        g.add(new THREE.Mesh(new THREE.LatheGeometry(points, 32), ceramic));
+        const rim = new THREE.Mesh(new THREE.TorusGeometry(0.3,0.03,12,32), brassMat);
+        rim.rotation.x = Math.PI/2; rim.position.y = 0.9; g.add(rim);
+        return g;
+      }
+    },
+    { name:"Wooden Wall Clock", cat:"decor", catLabel:"Home decor", price:"$46.00",
+      build: brassMat => {
+        const g = new THREE.Group();
+        const wood = new THREE.MeshStandardMaterial({color:0x8a5a34, metalness:0.05, roughness:0.7});
+        const dial = new THREE.MeshStandardMaterial({color:0xF5F1E8, metalness:0.05, roughness:0.5});
+        const face = new THREE.Mesh(new THREE.CylinderGeometry(1,1,0.14,48), wood);
+        face.rotation.x = Math.PI/2; g.add(face);
+        const inner = new THREE.Mesh(new THREE.CylinderGeometry(0.8,0.8,0.16,48), dial);
+        inner.rotation.x = Math.PI/2; g.add(inner);
+        const hourHand = new THREE.Mesh(new THREE.BoxGeometry(0.07,0.45,0.05), brassMat);
+        hourHand.position.set(0,0.2,0.11); g.add(hourHand);
+        const minHand = new THREE.Mesh(new THREE.BoxGeometry(0.05,0.65,0.05), brassMat);
+        minHand.position.set(0,0.3,0.13); g.add(minHand);
+        const centerDot = new THREE.Mesh(new THREE.SphereGeometry(0.06,16,16), brassMat);
+        centerDot.position.z = 0.14; g.add(centerDot);
+        return g;
+      }
+    }
+  ];
+
+  const grid = document.getElementById('featured-grid');
+  const scenes = [];
+
+  featured.forEach((p, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'p-card';
+    card.innerHTML = `
+      <div class="p-index"><span>0${idx+1}</span><span class="badge">${p.catLabel}</span></div>
+      <div class="canvas-wrap"><canvas></canvas><div class="drag-hint">&#8596; drag to rotate</div></div>
+      <h3>${p.name}</h3>
+      <div class="cat">${p.catLabel}</div>
+      <div class="p-row"><span class="p-price">${p.price}</span><button class="add" aria-label="Add ${p.name} to cart">+</button></div>
+    `;
+    grid.appendChild(card);
+    card.querySelector('.add').addEventListener('click', (e)=> addToCart(p.name, p.price, e));
+
+    // Clicking the card (but not the canvas drag area or the add button) opens the product's own page
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('.add') || e.target.closest('.canvas-wrap')) return;
+      goToProduct(slugify(p.name));
+    });
+
+    const canvasWrap = card.querySelector('.canvas-wrap');
+    const canvas = card.querySelector('canvas');
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+    camera.position.set(0, 0.4, 4.2);
+    const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const key = new THREE.DirectionalLight(0xffffff, 1.3); key.position.set(3,4,4); scene.add(key);
+    const rim = new THREE.DirectionalLight(0xc89b3c, 1.0); rim.position.set(-4,1,-3); scene.add(rim);
+    scene.add(new THREE.AmbientLight(0x445566, 0.75));
+
+    const brassMat = new THREE.MeshStandardMaterial({color:0xc89b3c, metalness:0.7, roughness:0.3});
+    const group = p.build(brassMat);
+    scene.add(group);
+
+    let targetRotY = 0.5, currentRotY = 0.5, autoRotate = true, dragging = false, lastX = 0;
+    function down(x){ dragging = true; autoRotate = false; lastX = x; }
+    function move(x){ if(!dragging) return; targetRotY += (x-lastX)*0.012; lastX = x; }
+    function up(){ dragging = false; }
+    canvas.addEventListener('mousedown', e=>down(e.clientX));
+    window.addEventListener('mousemove', e=>move(e.clientX));
+    window.addEventListener('mouseup', up);
+    canvas.addEventListener('touchstart', e=>down(e.touches[0].clientX), {passive:true});
+    canvas.addEventListener('touchmove', e=>move(e.touches[0].clientX), {passive:true});
+    canvas.addEventListener('touchend', up);
+
+    function resize(){
+      const w = canvasWrap.clientWidth, h = canvasWrap.clientHeight;
+      if(w===0||h===0) return;
+      camera.aspect = w/h; camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+    }
+    new ResizeObserver(resize).observe(canvasWrap);
+    resize();
+
+    scenes.push({ tick(){
+      if(autoRotate) targetRotY += 0.004;
+      currentRotY += (targetRotY - currentRotY) * 0.08;
+      group.rotation.y = currentRotY;
+      group.position.y = Math.sin(Date.now()*0.0008 + idx)*0.04;
+      renderer.render(scene, camera);
+    }});
+  });
+
+  function animateAll(){ requestAnimationFrame(animateAll); scenes.forEach(s=>s.tick()); }
+  animateAll();
+
+  /* ================= MORE FROM THE SHOP (filterable) ================= */
+  const more = [
+    {name:"Fast Charge Cable 3-Pack", cat:"cables", catLabel:"Charging cables · Nylon", price:"₹24.99"},
+    {name:"USB-C to Lightning Cable", cat:"cables", catLabel:"Charging cables · 6ft", price:"₹12.99"},
+    {name:"Magnetic Charging Cable", cat:"cables", catLabel:"Charging cables · Steel tip", price:"₹18.99"},
+    {name:"Smartwatch Lite", cat:"watches", catLabel:"Smartwatches · Silicone band", price:"₹59.00"},
+    {name:"Smartwatch Sport", cat:"watches", catLabel:"Smartwatches · GPS", price:"₹99.00"},
+    {name:"Watch Charging Dock", cat:"watches", catLabel:"Smartwatches · Accessory", price:"₹19.99"},
+    {name:"Incense Holder Set", cat:"decor", catLabel:"Home decor · Ceramic", price:"₹21.00"},
+    {name:"Warm Oak Table Lamp", cat:"decor", catLabel:"Home decor · Lighting", price:"₹58.00"}
+  ];
+  const categories = [
+    {id:'all', label:'All'}, {id:'cables', label:'Cables'}, {id:'watches', label:'Watches'}, {id:'decor', label:'Home decor'}
+  ];
+  let activeFilter = 'all';
+
+  const filtersEl = document.getElementById('filters');
+  categories.forEach(c=>{
+    const chip = document.createElement('button');
+    chip.className = 'chip' + (c.id==='all' ? ' active' : '');
+    chip.textContent = c.label;
+    chip.dataset.cat = c.id;
+    chip.addEventListener('click', ()=> setFilter(c.id));
+    filtersEl.appendChild(chip);
+  });
+
+  function setFilter(cat){
+    activeFilter = cat;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c.dataset.cat===cat));
+    renderFlatGrid();
+  }
+
+  const flatGrid = document.getElementById('flat-grid');
+  function renderFlatGrid(){
+    const list = activeFilter==='all' ? more : more.filter(p=>p.cat===activeFilter);
+    if(list.length===0){
+      flatGrid.innerHTML = '<div class="empty-note">No products in this category yet.</div>';
+      return;
+    }
+    flatGrid.innerHTML = list.map(p=>`
+      <div class="flat-card">
+        <div class="flat-visual"><span class="tag">New</span><div class="shape"></div></div>
+        <h4>${p.name}</h4>
+        <div class="cat">${p.catLabel}</div>
+        <div class="p-row"><span class="p-price">${p.price}</span><button class="add" data-name="${p.name}" data-price="${p.price}" aria-label="Add ${p.name} to cart">+</button></div>
+      </div>
+    `).join('');
+    flatGrid.querySelectorAll('.add').forEach(btn=>{
+      btn.addEventListener('click', (e)=> addToCart(btn.dataset.name, btn.dataset.price, e));
+    });
+    // Clicking anywhere on a flat card (but not the add button) opens that product's own page
+    flatGrid.querySelectorAll('.flat-card').forEach((cardEl, i)=>{
+      cardEl.style.cursor = 'pointer';
+      cardEl.addEventListener('click', (e)=>{
+        if(e.target.closest('.add')) return;
+        goToProduct(slugify(list[i].name));
+      });
+    });
+  }
+  renderFlatGrid();
+
+  /* ================= PRODUCT DETAIL PAGE ================= */
+  let productAnimId = null;
+  function stopProductScene(){
+    if(productAnimId){ cancelAnimationFrame(productAnimId); productAnimId = null; }
+  }
+
+  function findProduct(slug){
+    const f = featured.find(p => slugify(p.name) === slug);
+    if(f) return { ...f, threeD:true };
+    const m = more.find(p => slugify(p.name) === slug);
+    if(m) return { ...m, threeD:false };
+    return null;
+  }
+
+  function renderProductPage(slug){
+    stopProductScene();
+    const container = document.getElementById('product-detail-content');
+    const p = findProduct(slug);
+
+    if(!p){
+      container.innerHTML = `
+        <div class="eyebrow">Not found</div>
+        <h1>We couldn't find that product</h1>
+        <p>It may have been removed or the link is off.</p>
+        <button class="btn-ghost" onclick="navigate('home')">Back to shop</button>
+      `;
+      renderView('product');
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="eyebrow">${p.catLabel}</div>
+      <div class="product-detail-grid">
+        <div class="product-detail-media" id="pd-media"></div>
+        <div class="product-detail-info">
+          <h1 style="margin-bottom:6px;">${p.name}</h1>
+          <div class="p-price" style="font-size:20px;margin:10px 0 20px;">${p.price}</div>
+          <p>${p.threeD ? 'Drag the model below to inspect it from every angle before you buy.' : 'Part of the ' + p.catLabel + ' range.'}</p>
+          <div class="hero-cta" style="margin-top:12px;">
+            <button class="btn-primary" id="pd-add">Add to cart</button>
+            <button class="btn-ghost" onclick="navigate('home')">Back to shop</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('pd-add').addEventListener('click', (e)=> addToCart(p.name, p.price, e));
+
+    const mediaEl = document.getElementById('pd-media');
+    if(p.threeD){
+      mediaEl.innerHTML = `<div class="canvas-wrap" id="pd-canvas-wrap" style="max-width:420px;"><canvas></canvas><div class="drag-hint">&#8596; drag to rotate</div></div>`;
+      const canvasWrap = document.getElementById('pd-canvas-wrap');
+      const canvas = canvasWrap.querySelector('canvas');
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+      camera.position.set(0, 0.4, 4.2);
+      const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const key = new THREE.DirectionalLight(0xffffff, 1.3); key.position.set(3,4,4); scene.add(key);
+      const rim = new THREE.DirectionalLight(0xc89b3c, 1.0); rim.position.set(-4,1,-3); scene.add(rim);
+      scene.add(new THREE.AmbientLight(0x445566, 0.75));
+
+      const brassMat = new THREE.MeshStandardMaterial({color:0xc89b3c, metalness:0.7, roughness:0.3});
+      const group = p.build(brassMat);
+      scene.add(group);
+
+      let targetRotY = 0.5, currentRotY = 0.5, autoRotate = true, dragging = false, lastX = 0;
+      function down(x){ dragging = true; autoRotate = false; lastX = x; }
+      function move(x){ if(!dragging) return; targetRotY += (x-lastX)*0.012; lastX = x; }
+      function up(){ dragging = false; }
+      canvas.addEventListener('mousedown', e=>down(e.clientX));
+      window.addEventListener('mousemove', e=>move(e.clientX));
+      window.addEventListener('mouseup', up);
+      canvas.addEventListener('touchstart', e=>down(e.touches[0].clientX), {passive:true});
+      canvas.addEventListener('touchmove', e=>move(e.touches[0].clientX), {passive:true});
+      canvas.addEventListener('touchend', up);
+
+      function resize(){
+        const w = canvasWrap.clientWidth, h = canvasWrap.clientHeight;
+        if(w===0||h===0) return;
+        camera.aspect = w/h; camera.updateProjectionMatrix();
+        renderer.setSize(w, h, false);
+      }
+      new ResizeObserver(resize).observe(canvasWrap);
+      resize();
+
+      function tick(){
+        productAnimId = requestAnimationFrame(tick);
+        if(autoRotate) targetRotY += 0.004;
+        currentRotY += (targetRotY - currentRotY) * 0.08;
+        group.rotation.y = currentRotY;
+        renderer.render(scene, camera);
+      }
+      tick();
+    } else {
+      mediaEl.innerHTML = `<div class="flat-visual" style="max-width:420px;"><span class="tag">New</span><div class="shape"></div></div>`;
+    }
+
+    renderView('product');
+  }
+
+  /* Initial load: render whatever the URL hash points to (home/about/contact/product/slug) */
+  routeFromHash();
+</script>
+</body>
+</html>

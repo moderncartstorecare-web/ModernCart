@@ -615,10 +615,15 @@
     updateCartUI();
   });
 
-  /* ================= FEATURED 3D PRODUCTS ================= */
+/* ================= FEATURED 3D PRODUCTS ================= */
   const featured = [
-    { name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"₹14.99",
-      build: brassMat => {
+    { 
+      name: "Braided USB-C Cable", 
+      cat: "cables", 
+      catLabel: "Charging cables", 
+      price: "₹14.99",
+      url: "braided-usb-c-cable.html", // SURGICAL ADDITION: Points to your new page
+      build: brassMat => { // ... rest of your 3D building logic stays untouched
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
         const curve = new THREE.CatmullRomCurve3([

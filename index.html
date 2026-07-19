@@ -515,7 +515,7 @@
     const endX = endRect.left + endRect.width/2;
     const endY = endRect.top + endRect.height/2;
     requestAnimationFrame(()=>{
-      dot.style.transform = `translate(₹{endX-startX}px, ₹{endY-startY}px) scale(0.25)`;
+      dot.style.transform = `translate(${endX-startX}px, ${endY-startY}px) scale(0.25)`;
       dot.style.opacity = '0';
     });
     setTimeout(()=>{
@@ -525,11 +525,9 @@
     }, 600);
   }
 
- function addToCart(name, priceStr, evt){
+  function addToCart(name, priceStr, evt){
     if(evt && evt.currentTarget) flyToCart(evt.currentTarget);
-    
-    // Strips both ₹ and $ symbols cleanly so math calculations never crash
-    const price = parseFloat(priceStr.replace(/[₹$]/g, ''));
+    const price = parseFloat(priceStr.replace('$',''));
     const existing = cart.find(i=>i.name===name);
     if(existing){ existing.qty += 1; } else { cart.push({name, price, qty:1}); }
     updateCartUI();
@@ -543,12 +541,10 @@
     if(item.qty <= 0) cart = cart.filter(i=>i.name!==name);
     updateCartUI();
   }
-  
   function removeItem(name){
     cart = cart.filter(i=>i.name!==name);
     updateCartUI();
   }
-  
   function checkout(){
     if(cart.length===0){ showToast('Your cart is empty'); return; }
     showToast('Checkout is a demo — order not actually placed');
@@ -568,7 +564,7 @@
         <div class="cart-item">
           <div>
             <div class="ci-name">${i.name}</div>
-            <div class="ci-meta">₹${Number(i.price).toLocaleString('en-IN')} each</div>
+            <div class="ci-meta">$${i.price.toFixed(2)} each</div>
             <div class="ci-remove" onclick="removeItem('${i.name.replace(/'/g,"\\'")}')">Remove</div>
           </div>
           <div class="ci-qty">
@@ -580,7 +576,7 @@
       `).join('');
     }
     const subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
-    document.getElementById('cartSubtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
+    document.getElementById('cartSubtotal').textContent = '$' + subtotal.toFixed(2);
   }
   updateCartUI();
 

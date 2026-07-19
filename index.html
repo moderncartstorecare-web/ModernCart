@@ -284,7 +284,7 @@
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot">
-    <div class="cart-sub"><span>Subtotal</span><span class="amt" id="cartSubtotal">$0.00</span></div>
+    <div class="cart-sub"><span>Subtotal</span><span class="amt" id="cartSubtotal">₹0.00</span></div>
     <button class="btn-primary" style="width:100%;justify-content:center;" onclick="checkout()">Checkout</button>
   </div>
 </div>
@@ -311,11 +311,11 @@
 
   <div class="marquee">
     <div class="marquee-track">
-      <span>Free shipping over <b>$40</b></span>
+      <span>Free shipping over <b>₹40</b></span>
       <span>1-year <b>warranty</b></span>
       <span>Fast charging <b>certified</b></span>
       <span>Easy <b>returns</b></span>
-      <span>Free shipping over <b>$40</b></span>
+      <span>Free shipping over <b>₹40</b></span>
       <span>1-year <b>warranty</b></span>
       <span>Fast charging <b>certified</b></span>
       <span>Easy <b>returns</b></span>
@@ -586,7 +586,7 @@
 
   /* ================= FEATURED 3D PRODUCTS ================= */
   const featured = [
-    { name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"$14.99",
+    { name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"₹14.99",
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
@@ -603,7 +603,7 @@
         return g;
       }
     },
-    { name:"Smartwatch Pro", cat:"watches", catLabel:"Smartwatches", price:"$89.00",
+    { name:"Smartwatch Pro", cat:"watches", catLabel:"Smartwatches", price:"₹89.00",
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x14171f, metalness:0.5, roughness:0.3});
@@ -621,7 +621,7 @@
         return g;
       }
     },
-    { name:"Ceramic Table Vase", cat:"decor", catLabel:"Home decor", price:"$32.00",
+    { name:"Ceramic Table Vase", cat:"decor", catLabel:"Home decor", price:"₹32.00",
       build: brassMat => {
         const g = new THREE.Group();
         const ceramic = new THREE.MeshStandardMaterial({color:0xEDE7DA, metalness:0.05, roughness:0.6});

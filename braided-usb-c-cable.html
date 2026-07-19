@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Braided USB-C Cable - ModernCart</title>
+  <!-- Link your main stylesheet or inline styling here so fonts & themes stay identical -->
+  <style>
+    :root {
+      --bg: #0b0d10;
+      --ink: #ffffff;
+      --brass: #d4af37;
+      --bone: #f4f4f0;
+    }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 40px 6vw;
+    }
+    .back-btn {
+      background: transparent;
+      color: #aaa;
+      border: 1px solid #333;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 30px;
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      color: var(--ink);
+      border-color: var(--brass);
+    }
+    .pdp-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      margin-top: 20px;
+    }
+    @media (max-width: 768px) {
+      .pdp-container { grid-template-columns: 1fr; gap: 30px; }
+    }
+    .pdp-media-box {
+      background: #12151a;
+      border-radius: 12px;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #1c2026;
+    }
+    .pdp-media-box text {
+      color: #555;
+    }
+    .pdp-meta h1 { font-size: 2.5rem; margin: 0 0 8px 0; font-weight: 600; }
+    .pdp-tag { color: #888; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+    .pdp-price { color: var(--brass); font-size: 1.8rem; font-weight: 700; margin: 20px 0; }
+    .pdp-desc { line-height: 1.7; color: #ccc; font-size: 1rem; }
+    .btn-buy {
+      background: var(--brass);
+      color: #000;
+      border: none;
+      padding: 14px 32px;
+      font-weight: 600;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 24px 0;
+      transition: opacity 0.2s ease;
+    }
+    .btn-buy:hover { opacity: 0.9; }
+    .info-row {
+      border-top: 1px solid #1c2026;
+      padding: 16px 0;
+      margin-top: 20px;
+    }
+    .info-row h4 { margin: 0 0 6px 0; color: #fff; }
+    .info-row p { margin: 0; color: #888; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Back Link -->
+  <a href="index.html" class="back-btn">← Back to Shop</a>
+
+  <div class="pdp-container">
+    <!-- Left Display View -->
+    <div class="pdp-media-box">
+       <!-- You can place your 3D canvas or regular product image asset element here -->
+       <span style="color: #444;">[ Product 3D View / Image Space ]</span>
+    </div>
+
+    <!-- Right Side Context Fields -->
+    <div class="pdp-meta">
+      <div class="pdp-tag">Charging Cables</div>
+      <h1>Braided USB-C Cable</h1>
+      <div class="pdp-price">₹14.99</div>
+      
+      <h3>Product Overview</h3>
+      <p class="pdp-desc">
+        Engineered for unmatched durability and performance. This premium USB-C to USB-C charging cable features a heavy-duty double-braided nylon exterior shield protecting reinforced tinned copper cores. Perfect for ultra-fast power delivery requirements.
+      </p>
+
+      <!-- Hooked into your main operation workflows -->
+      <button class="btn-buy" onclick="alert('Added to system checkout registry!')">Add to Cart</button>
+
+      <!-- Additional Custom Shop Content Sections -->
+      <div class="info-row">
+        <h4>Shipping & Delivery Address</h4>
+        <p>Dispatched directly from our regional fulfillment warehouse Hub. Safe delivery tracking updates handled via secure email updates.</p>
+      </div>
+
+      <div class="info-row">
+        <h4>Verified Customer Feedback</h4>
+        <p>⭐⭐⭐⭐⭐ (4.9/5) — "Unbelievably heavy-duty texture. Outlasts original stock phone lines easily." - Rohan M.</p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -637,7 +637,7 @@
         return g;
       }
     },
-    { name:"Wooden Wall Clock", cat:"decor", catLabel:"Home decor", price:"$46.00",
+    { name:"Wooden Wall Clock", cat:"decor", catLabel:"Home decor", price:"₹46.00",
       build: brassMat => {
         const g = new THREE.Group();
         const wood = new THREE.MeshStandardMaterial({color:0x8a5a34, metalness:0.05, roughness:0.7});
@@ -664,11 +664,11 @@
     const card = document.createElement('div');
     card.className = 'p-card';
     card.innerHTML = `
-      <div class="p-index"><span>0${idx+1}</span><span class="badge">${p.catLabel}</span></div>
+      <div class="p-index"><span>0₹{idx+1}</span><span class="badge">₹{p.catLabel}</span></div>
       <div class="canvas-wrap"><canvas></canvas><div class="drag-hint">&#8596; drag to rotate</div></div>
-      <h3>${p.name}</h3>
-      <div class="cat">${p.catLabel}</div>
-      <div class="p-row"><span class="p-price">${p.price}</span><button class="add" aria-label="Add ${p.name} to cart">+</button></div>
+      <h3>₹{p.name}</h3>
+      <div class="cat">₹{p.catLabel}</div>
+      <div class="p-row"><span class="p-price">₹{p.price}</span><button class="add" aria-label="Add ₹{p.name} to cart">+</button></div>
     `;
     grid.appendChild(card);
     card.querySelector('.add').addEventListener('click', (e)=> addToCart(p.name, p.price, e));
@@ -724,14 +724,14 @@
 
   /* ================= MORE FROM THE SHOP (filterable) ================= */
   const more = [
-    {name:"Fast Charge Cable 3-Pack", cat:"cables", catLabel:"Charging cables · Nylon", price:"$24.99"},
-    {name:"USB-C to Lightning Cable", cat:"cables", catLabel:"Charging cables · 6ft", price:"$12.99"},
-    {name:"Magnetic Charging Cable", cat:"cables", catLabel:"Charging cables · Steel tip", price:"$18.99"},
-    {name:"Smartwatch Lite", cat:"watches", catLabel:"Smartwatches · Silicone band", price:"$59.00"},
-    {name:"Smartwatch Sport", cat:"watches", catLabel:"Smartwatches · GPS", price:"$99.00"},
-    {name:"Watch Charging Dock", cat:"watches", catLabel:"Smartwatches · Accessory", price:"$19.99"},
-    {name:"Incense Holder Set", cat:"decor", catLabel:"Home decor · Ceramic", price:"$21.00"},
-    {name:"Warm Oak Table Lamp", cat:"decor", catLabel:"Home decor · Lighting", price:"$58.00"}
+    {name:"Fast Charge Cable 3-Pack", cat:"cables", catLabel:"Charging cables · Nylon", price:"₹24.99"},
+    {name:"USB-C to Lightning Cable", cat:"cables", catLabel:"Charging cables · 6ft", price:"₹12.99"},
+    {name:"Magnetic Charging Cable", cat:"cables", catLabel:"Charging cables · Steel tip", price:"₹18.99"},
+    {name:"Smartwatch Lite", cat:"watches", catLabel:"Smartwatches · Silicone band", price:"₹59.00"},
+    {name:"Smartwatch Sport", cat:"watches", catLabel:"Smartwatches · GPS", price:"₹99.00"},
+    {name:"Watch Charging Dock", cat:"watches", catLabel:"Smartwatches · Accessory", price:"₹19.99"},
+    {name:"Incense Holder Set", cat:"decor", catLabel:"Home decor · Ceramic", price:"₹21.00"},
+    {name:"Warm Oak Table Lamp", cat:"decor", catLabel:"Home decor · Lighting", price:"₹58.00"}
   ];
   const categories = [
     {id:'all', label:'All'}, {id:'cables', label:'Cables'}, {id:'watches', label:'Watches'}, {id:'decor', label:'Home decor'}
@@ -764,9 +764,9 @@
     flatGrid.innerHTML = list.map(p=>`
       <div class="flat-card">
         <div class="flat-visual"><span class="tag">New</span><div class="shape"></div></div>
-        <h4>${p.name}</h4>
-        <div class="cat">${p.catLabel}</div>
-        <div class="p-row"><span class="p-price">${p.price}</span><button class="add" data-name="${p.name}" data-price="${p.price}" aria-label="Add ${p.name} to cart">+</button></div>
+        <h4>₹{p.name}</h4>
+        <div class="cat">₹{p.catLabel}</div>
+        <div class="p-row"><span class="p-price">₹{p.price}</span><button class="add" data-name="₹{p.name}" data-price="₹{p.price}" aria-label="Add ₹{p.name} to cart">+</button></div>
       </div>
     `).join('');
     flatGrid.querySelectorAll('.add').forEach(btn=>{

@@ -495,7 +495,7 @@
     return false;
   }
 
- /* ================= CART ================= */
+/* ================= CART ================= */
  let cart = JSON.parse(localStorage.getItem('modernCartData')) || [];
 
   function toggleCart(){
@@ -516,16 +516,19 @@
     document.body.appendChild(dot);
     const endX = endRect.left + endRect.width/2;
     const endY = endRect.top + endRect.height/2;
+    
     requestAnimationFrame(()=>{
-      // FIXED: Swapped out the literal '₹' syntax error for proper template literals '${}' so calculation functions correctly
-      dot.style.transform = `translate(${endX-startX}px, ${endY-startY}px) scale(0.25)`;
-      dot.style.opacity = '0';
+      // UPDATED: Scale changed to 0.5 (larger) and opacity to 0.4 so the customer can easily see it tracking
+      dot.style.transform = `translate(${endX-startX}px, ${endY-startY}px) scale(0.5)`;
+      dot.style.opacity = '0.4';
     });
+    
+    // UPDATED: Extended the timeout window to 1000ms (1 second) for a much slower and smoother flight path
     setTimeout(()=>{
       dot.remove();
       cartIcon.classList.add('bump');
       setTimeout(()=>cartIcon.classList.remove('bump'), 350);
-    }, 600);
+    }, 1000);
   }
 
  function addToCart(name, priceStr, evt){

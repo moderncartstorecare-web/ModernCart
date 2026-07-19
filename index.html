@@ -215,8 +215,15 @@
 
   /* ---------- FLY-TO-CART DOT ---------- */
   .fly-dot{
-    position:fixed;width:16px;height:16px;border-radius:50%;background:var(--brass);z-index:500;
-    pointer-events:none;transition:transform .6s cubic-bezier(.3,.6,.4,1), opacity .6s ease;
+    position: fixed;
+    width: 20px;          /* UPDATED: Increased width so customers can track it easily */
+    height: 20px;         /* UPDATED: Increased height to match */
+    border-radius: 50%;
+    background: var(--brass);
+    z-index: 99999;       /* UPDATED: Higher layer depth so it never dips under layout cards */
+    pointer-events: none;
+    /* UPDATED: Timed to 1.0s (1 second) for a much slower, cinematic slide */
+    transition: transform 1.0s cubic-bezier(.25, 1, .5, 1), opacity 1.0s ease;
   }
 
   /* ---------- TOAST ---------- */

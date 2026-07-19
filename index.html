@@ -563,14 +563,14 @@
       itemsEl.innerHTML = cart.map(i=>`
         <div class="cart-item">
           <div>
-            <div class="ci-name">₹{i.name}</div>
+            <div class="ci-name">${i.name}</div>
             <div class="ci-meta">$${i.price.toFixed(2)} each</div>
-            <div class="ci-remove" onclick="removeItem('₹{i.name.replace(/'/g,"\\'")}')">Remove</div>
+            <div class="ci-remove" onclick="removeItem('${i.name.replace(/'/g,"\\'")}')">Remove</div>
           </div>
           <div class="ci-qty">
-            <button onclick="changeQty('₹{i.name.replace(/'/g,"\\'")}', -1)">−</button>
-            <span class="mono">₹{i.qty}</span>
-            <button onclick="changeQty('₹{i.name.replace(/'/g,"\\'")}', 1)">+</button>
+            <button onclick="changeQty('${i.name.replace(/'/g,"\\'")}', -1)">−</button>
+            <span class="mono">${i.qty}</span>
+            <button onclick="changeQty('${i.name.replace(/'/g,"\\'")}', 1)">+</button>
           </div>
         </div>
       `).join('');

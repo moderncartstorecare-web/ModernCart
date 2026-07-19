@@ -495,7 +495,7 @@
     return false;
   }
 
-  /* ================= CART ================= */
+ /* ================= CART ================= */
  let cart = JSON.parse(localStorage.getItem('modernCartData')) || [];
 
   function toggleCart(){
@@ -517,7 +517,8 @@
     const endX = endRect.left + endRect.width/2;
     const endY = endRect.top + endRect.height/2;
     requestAnimationFrame(()=>{
-      dot.style.transform = `translate(₹{endX-startX}px, ₹{endY-startY}px) scale(0.25)`;
+      // FIXED: Swapped out the literal '₹' syntax error for proper template literals '${}' so calculation functions correctly
+      dot.style.transform = `translate(${endX-startX}px, ${endY-startY}px) scale(0.25)`;
       dot.style.opacity = '0';
     });
     setTimeout(()=>{
@@ -534,6 +535,9 @@
     const price = parseFloat(priceStr.replace(/[₹$]/g, ''));
     const existing = cart.find(i=>i.name===name);
     if(existing){ existing.qty += 1; } else { cart.push({name, price, qty:1}); }
+    
+    // UPDATED: Saves items to browser memory array
+    localStorage.setItem('modernCartData', JSON.stringify(cart));
     updateCartUI();
     showToast(name + ' added to cart');
   }
@@ -543,11 +547,17 @@
     if(!item) return;
     item.qty += delta;
     if(item.qty <= 0) cart = cart.filter(i=>i.name!==name);
+    
+    // UPDATED: Saves quantity modifications to browser memory array
+    localStorage.setItem('modernCartData', JSON.stringify(cart));
     updateCartUI();
   }
   
   function removeItem(name){
     cart = cart.filter(i=>i.name!==name);
+    
+    // UPDATED: Saves item removals to browser memory array
+    localStorage.setItem('modernCartData', JSON.stringify(cart));
     updateCartUI();
   }
   
@@ -559,10 +569,14 @@
   function updateCartUI(){
     const totalQty = cart.reduce((s,i)=>s+i.qty,0);
     const badge = document.getElementById('cart-badge');
-    badge.textContent = totalQty;
-    badge.hidden = totalQty === 0;
+    if(badge) {
+      badge.textContent = totalQty;
+      badge.hidden = totalQty === 0;
+    }
 
     const itemsEl = document.getElementById('cartItems');
+    if(!itemsEl) return; // Guard clause to protect the runtime thread execution during canvas setups
+
     if(cart.length===0){
       itemsEl.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
     } else {
@@ -582,9 +596,14 @@
       `).join('');
     }
     const subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
-    document.getElementById('cartSubtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
+    const subtotalEl = document.getElementById('cartSubtotal');
+    if(subtotalEl) subtotalEl.textContent = '₹' + subtotal.toLocaleString('en-IN');
   }
-  updateCartUI();
+
+  // UPDATED: Wrapped within event listener block to prevent crashing layout nodes
+  window.addEventListener('DOMContentLoaded', () => {
+    updateCartUI();
+  });
 
   /* ================= FEATURED 3D PRODUCTS ================= */
   const featured = [

@@ -496,7 +496,7 @@
   }
 
   /* ================= CART ================= */
-  let cart = [];
+ let cart = JSON.parse(localStorage.getItem('modernCartData')) || [];
 
   function toggleCart(){
     document.getElementById('cartDrawer').classList.toggle('open');

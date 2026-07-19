@@ -527,18 +527,13 @@
     }, 600);
   }
 
- // 1. INITIALIZE CART FROM STORAGE (Put this where your "let cart = [];" is located near the top)
-  let cart = JSON.parse(localStorage.getItem('modernCartData')) || [];
-
-  function addToCart(name, priceStr, evt){
-    if(evt && evt.currentTarget) flyToCart(evt.currentTarget); // Animation stays exactly here!
+ function addToCart(name, priceStr, evt){
+    if(evt && evt.currentTarget) flyToCart(evt.currentTarget);
     
     // Strips both ₹ and $ symbols cleanly so math calculations never crash
     const price = parseFloat(priceStr.replace(/[₹$]/g, ''));
     const existing = cart.find(i=>i.name===name);
     if(existing){ existing.qty += 1; } else { cart.push({name, price, qty:1}); }
-    
-    localStorage.setItem('modernCartData', JSON.stringify(cart)); // Save to storage
     updateCartUI();
     showToast(name + ' added to cart');
   }
@@ -548,15 +543,11 @@
     if(!item) return;
     item.qty += delta;
     if(item.qty <= 0) cart = cart.filter(i=>i.name!==name);
-    
-    localStorage.setItem('modernCartData', JSON.stringify(cart)); // Save to storage
     updateCartUI();
   }
   
   function removeItem(name){
     cart = cart.filter(i=>i.name!==name);
-    
-    localStorage.setItem('modernCartData', JSON.stringify(cart)); // Save to storage
     updateCartUI();
   }
   
@@ -593,8 +584,6 @@
     const subtotal = cart.reduce((s,i)=>s + i.price*i.qty, 0);
     document.getElementById('cartSubtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
   }
-  
-  // 2. RUN ON STARTUP (This ensures your saved items show up the millisecond the page loads)
   updateCartUI();
 
   /* ================= FEATURED 3D PRODUCTS ================= */

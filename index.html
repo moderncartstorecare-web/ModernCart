@@ -626,14 +626,14 @@
     const endX = endRect.left + endRect.width/2;
     const endY = endRect.top + endRect.height/2;
     requestAnimationFrame(()=>{
-      dot.style.transform = `translate(${endX-startX}px, ${endY-startY}px) scale(0.25)`;
+      dot.style.transform = `translate(${endX-startX}px, ${endY-startY}px) scale(0.40)`;
       dot.style.opacity = '0';
     });
     setTimeout(()=>{
       dot.remove();
       cartIcon.classList.add('bump');
       setTimeout(()=>cartIcon.classList.remove('bump'), 350);
-    }, 600);
+    }, 1000);
   }
 
   function addToCart(name, priceStr, evt){

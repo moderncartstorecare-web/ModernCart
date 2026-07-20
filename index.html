@@ -626,14 +626,14 @@
     const endX = endRect.left + endRect.width/2;
     const endY = endRect.top + endRect.height/2;
     requestAnimationFrame(()=>{
-      dot.style.transform = `translate(${endX-startX}px, ${endY-startY}px) scale(0.40)`;
+      dot.style.transform = `translate(${endX-startX}px, ${endY-startY}px) scale(0.25)`;
       dot.style.opacity = '0';
     });
     setTimeout(()=>{
       dot.remove();
       cartIcon.classList.add('bump');
       setTimeout(()=>cartIcon.classList.remove('bump'), 350);
-    }, 1000);
+    }, 600);
   }
 
   function addToCart(name, priceStr, evt){
@@ -985,14 +985,10 @@
     canvas.addEventListener('touchend', up);
 
     function resize(){
-      const w = canvasWrap.clientWidth, h = canvasWrap.clientHeight;
+      const w = mediaWrap.clientWidth, h = mediaWrap.clientHeight;
       if(w===0||h===0) return;
-      camera.aspect = w/h; 
-      camera.updateProjectionMatrix();
+      camera.aspect = w/h; camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
-      // Forces the renderer to clear properly on mobile to prevent white blocks
-      renderer.setClearColor(0x000000, 0); 
-    }
     }
     new ResizeObserver(resize).observe(mediaWrap);
     resize();

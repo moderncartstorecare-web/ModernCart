@@ -315,11 +315,11 @@
 
   <div class="marquee">
     <div class="marquee-track">
-      <span>Free shipping over <b>₹40</b></span>
+      <span>Free shipping over <b>₹499</b></span>
       <span>1-year <b>warranty</b></span>
       <span>Fast charging <b>certified</b></span>
       <span>Easy <b>returns</b></span>
-      <span>Free shipping over <b>₹40</b></span>
+      <span>Free shipping over <b>₹499</b></span>
       <span>1-year <b>warranty</b></span>
       <span>Fast charging <b>certified</b></span>
       <span>Easy <b>returns</b></span>
@@ -488,6 +488,24 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+  /* ================= PREVENT PINCH / DOUBLE-TAP ZOOM =================
+     The <meta viewport> tag's user-scalable=no is enough on most Android
+     browsers, but modern iOS Safari deliberately ignores it (an
+     accessibility change Apple made a few years back), so pinch and
+     double-tap zoom can still slip through on iPhones without this. */
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  document.addEventListener('gesturechange', e => e.preventDefault());
+  document.addEventListener('gestureend', e => e.preventDefault());
+  document.addEventListener('touchmove', e => {
+    if(e.touches.length > 1) e.preventDefault(); // blocks two-finger pinch
+  }, { passive: false });
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if(now - lastTouchEnd <= 300) e.preventDefault(); // blocks double-tap zoom
+    lastTouchEnd = now;
+  }, false);
+
   /* ================= NAVIGATION / SPA ROUTING ================= */
   /* Routing lives in the URL hash (#about, #contact, #returns, #checkout,
      #product/slug) so a browser refresh lands back on the same page
@@ -638,7 +656,7 @@
 
   function addToCart(name, priceStr, evt){
     if(evt && evt.currentTarget) flyToCart(evt.currentTarget);
-    const price = parseFloat(priceStr.replace(/[₹$]/g, ''));
+    const price = parseFloat(priceStr.replace(/[₹$,]/g, ''));
     const existing = cart.find(i=>i.name===name);
     if(existing){ existing.qty += 1; } else { cart.push({name, price, qty:1}); }
     localStorage.setItem('modernCartData', JSON.stringify(cart));
@@ -712,7 +730,7 @@
           shape automatically. You don't need to touch any other code.
      ------------------------------------------------------------------ */
   const ALL_PRODUCTS = [
-    { featured:true, name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"₹14.99",
+    { featured:true, name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"₹179",
       // image: "images/usb-c-cable.jpg",   <-- uncomment + point at a real photo to replace the 3D shape
       desc:"A 1.5m braided USB-C cable built for daily pocket-and-bag abuse, not just a desk drawer.",
       benefits:["1.5m braided nylon jacket","60W fast charging support","10,000+ bend life cycle"],
@@ -732,7 +750,7 @@
         return g;
       }
     },
-    { featured:true, name:"Smartwatch Pro", cat:"watches", catLabel:"Smartwatches", price:"₹89.00",
+    { featured:true, name:"Smartwatch Pro", cat:"watches", catLabel:"Smartwatches", price:"₹899",
       desc:"An everyday smartwatch with a bright always-on display and a battery that actually lasts the week.",
       benefits:["7-day battery life","Always-on AMOLED display","5ATM water resistance"],
       build: brassMat => {
@@ -752,7 +770,7 @@
         return g;
       }
     },
-    { featured:true, name:"Ceramic Table Vase", cat:"decor", catLabel:"Home decor", price:"₹32.00",
+    { featured:true, name:"Ceramic Table Vase", cat:"decor", catLabel:"Home decor", price:"₹599",
       desc:"A hand-glazed ceramic vase sized for a single stem or a small everyday bunch.",
       benefits:["Hand-glazed ceramic","Food-safe finish","Fits fresh or dried stems"],
       build: brassMat => {
@@ -770,7 +788,7 @@
         return g;
       }
     },
-    { featured:true, name:"Wooden Wall Clock", cat:"decor", catLabel:"Home decor", price:"₹46.00",
+    { featured:true, name:"Wooden Wall Clock", cat:"decor", catLabel:"Home decor", price:"₹899",
       desc:"A solid oak wall clock with a silent sweep movement — no ticking to notice at 2am.",
       benefits:["Solid oak face","Silent sweep movement","30cm diameter"],
       build: brassMat => {
@@ -790,7 +808,7 @@
         return g;
       }
     },
-    { featured:false, name:"Fast Charge Cable 3-Pack", cat:"cables", catLabel:"Charging cables · Nylon", price:"₹24.99",
+    { featured:false, name:"Fast Charge Cable 3-Pack", cat:"cables", catLabel:"Charging cables · Nylon", price:"₹449",
       desc:"Three lengths, one pack — a short one for your desk, a long one for the couch, a travel one for your bag.",
       benefits:["3 cables per pack: 0.3m / 1m / 2m","65W PD support","Reinforced aluminium connectors"],
       build: brassMat => {
@@ -810,7 +828,7 @@
         return g;
       }
     },
-    { featured:false, name:"USB-C to Lightning Cable", cat:"cables", catLabel:"Charging cables · 6ft", price:"₹12.99",
+    { featured:false, name:"USB-C to Lightning Cable", cat:"cables", catLabel:"Charging cables · 6ft", price:"₹249",
       desc:"A 6ft cable that bridges USB-C chargers with Lightning-style devices, so one charger covers everything.",
       benefits:["MFi-style compatible connector","6ft length","20W fast charge support"],
       build: brassMat => {
@@ -829,7 +847,7 @@
         return g;
       }
     },
-    { featured:false, name:"Magnetic Charging Cable", cat:"cables", catLabel:"Charging cables · Steel tip", price:"₹18.99",
+    { featured:false, name:"Magnetic Charging Cable", cat:"cables", catLabel:"Charging cables · Steel tip", price:"₹299",
       desc:"Snap it on instead of fumbling for the port — the magnetic tip lines itself up in the dark.",
       benefits:["Snap-on magnetic tip","540° rotating connector","Reversible — can't plug in wrong"],
       build: brassMat => {
@@ -846,7 +864,7 @@
         return g;
       }
     },
-    { featured:false, name:"Smartwatch Lite", cat:"watches", catLabel:"Smartwatches · Silicone band", price:"₹59.00",
+    { featured:false, name:"Smartwatch Lite", cat:"watches", catLabel:"Smartwatches · Silicone band", price:"₹649",
       desc:"A lighter, simpler smartwatch for everyday wear — sleep and heart-rate tracking without the bulk.",
       benefits:["Lightweight silicone band","10-day battery life","Sleep + heart rate tracking"],
       build: brassMat => {
@@ -864,7 +882,7 @@
         return g;
       }
     },
-    { featured:false, name:"Smartwatch Sport", cat:"watches", catLabel:"Smartwatches · GPS", price:"₹99.00",
+    { featured:false, name:"Smartwatch Sport", cat:"watches", catLabel:"Smartwatches · GPS", price:"₹1,199",
       desc:"Built-in GPS and a MIL-STD-tested bezel for the smartwatch that has to survive an actual workout.",
       benefits:["Built-in GPS","Rugged bezel, MIL-STD tested","50 sport modes"],
       build: brassMat => {
@@ -884,7 +902,7 @@
         return g;
       }
     },
-    { featured:false, name:"Watch Charging Dock", cat:"watches", catLabel:"Smartwatches · Accessory", price:"₹19.99",
+    { featured:false, name:"Watch Charging Dock", cat:"watches", catLabel:"Smartwatches · Accessory", price:"₹349",
       desc:"A weighted charging puck that keeps your smartwatch upright and charging on your nightstand.",
       benefits:["Magnetic fast-charge puck","Non-slip weighted base","1.2m braided cable included"],
       build: brassMat => {
@@ -899,7 +917,7 @@
         return g;
       }
     },
-    { featured:false, name:"Incense Holder Set", cat:"decor", catLabel:"Home decor · Ceramic", price:"₹21.00",
+    { featured:false, name:"Incense Holder Set", cat:"decor", catLabel:"Home decor · Ceramic", price:"₹349",
       desc:"A solid sheesham wood holder that catches ash cleanly instead of leaving a mess on the shelf.",
       benefits:["Solid sheesham wood","Catches ash cleanly","Fits standard incense sticks"],
       build: brassMat => {
@@ -918,7 +936,7 @@
         return g;
       }
     },
-    { featured:false, name:"Warm Oak Table Lamp", cat:"decor", catLabel:"Home decor · Lighting", price:"₹58.00",
+    { featured:false, name:"Warm Oak Table Lamp", cat:"decor", catLabel:"Home decor · Lighting", price:"₹1,299",
       desc:"A dimmable warm-white lamp on a solid oak base, with a linen shade that softens the light.",
       benefits:["Dimmable warm-white LED","Solid oak base","Linen shade"],
       build: brassMat => {

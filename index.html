@@ -989,8 +989,9 @@
     // native touch scrolling take over, so the page glides normally under a
     // finger that touched a product card. Mouse drags skip this and rotate
     // immediately in any direction, since a mouse never triggers page scroll.
-    let axis = null, downX = 0, downY = 0;
+    let axis = null, downX = 0, downY = 0, resumeTimer = null;
     function onPointerDown(e){
+      if(resumeTimer){ clearTimeout(resumeTimer); resumeTimer = null; }
       dragging = true; autoRotate = false; lastX = e.clientX;
       downX = e.clientX; downY = e.clientY;
       axis = (e.pointerType === 'mouse') ? 'x' : null;
@@ -1008,7 +1009,11 @@
       targetRotY += (e.clientX - lastX) * 0.012;
       lastX = e.clientX;
     }
-    function onPointerUp(){ dragging = false; axis = null; }
+    function onPointerUp(){
+      dragging = false; axis = null;
+      if(resumeTimer) clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(()=>{ autoRotate = true; resumeTimer = null; }, 1500);
+    }
     canvas.addEventListener('pointerdown', onPointerDown);
     canvas.addEventListener('pointermove', onPointerMove);
     canvas.addEventListener('pointerup', onPointerUp);
@@ -1056,6 +1061,7 @@
     }
 
     function dispose(){
+      if(resumeTimer){ clearTimeout(resumeTimer); resumeTimer = null; }
       if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
       if(resizeObs){ resizeObs.disconnect(); resizeObs = null; }
       if(renderer){ renderer.dispose(); renderer = null; }

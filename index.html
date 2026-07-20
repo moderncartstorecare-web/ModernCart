@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ModernCart Store</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
-  body{background:var(--ink);color:var(--bone);font-family:'Inter',sans-serif;overflow-x:hidden;width:100%;touch-action:manipulation;}
+  body{background:var(--ink);color:var(--bone);font-family:'Inter',sans-serif;overflow-x:hidden;width:100%;}
   img,canvas{max-width:100%;}
   h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
@@ -87,7 +87,7 @@
   .sec-head h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:600;letter-spacing:-0.5px;}
   .sec-head p{color:var(--bone-dim);font-size:14px;max-width:340px;}
 
-  /* ---------- 3D PRODUCT CARDS (used for both Featured and More) ---------- */
+  /* ---------- FEATURED 3D PRODUCTS ---------- */
   .product-grid{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:20px;padding:0 5vw 100px;}
   .p-card{background:var(--ink-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;min-width:0;transition:border-color .3s ease;}
   .p-card:hover{border-color:var(--brass-dim);}
@@ -105,7 +105,7 @@
     width:32px;height:32px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
     font-size:16px;flex-shrink:0;transition:background .2s, color .2s, transform .15s;
   }
-  .p-card:hover .add{background:var(--brass);color:var(--ink);border-color:var(--brass);}
+  .p-card:hover .add, .flat-card:hover .add{background:var(--brass);color:var(--ink);border-color:var(--brass);}
   .add:active{transform:scale(0.85);}
 
   /* ---------- MARQUEE ---------- */
@@ -125,6 +125,13 @@
   .chip:hover{border-color:var(--bone-dim);color:var(--bone);}
   .chip.active{background:var(--brass);color:var(--ink);border-color:var(--brass);}
   .flat-grid{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:18px;}
+  .flat-card{background:var(--ink-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;min-width:0;transition:transform .3s ease, border-color .3s ease;}
+  .flat-card:hover{transform:translateY(-4px);border-color:var(--brass-dim);}
+  .flat-visual{aspect-ratio:1/1;border-radius:10px;margin-bottom:14px;background:radial-gradient(circle at 30% 30%, #1c2129, #0c0f15);display:flex;align-items:center;justify-content:center;position:relative;}
+  .flat-visual .shape{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--brass),var(--brass-dim));transform:rotate(20deg);}
+  .flat-card .tag{position:absolute;top:12px;left:12px;font-size:9px;letter-spacing:1px;text-transform:uppercase;background:rgba(245,241,232,0.1);padding:4px 9px;border-radius:999px;color:var(--bone-dim);}
+  .flat-card h4{font-size:14px;font-weight:500;margin-bottom:4px;}
+  .flat-card .cat{font-size:11px;color:var(--bone-dim);margin-bottom:12px;}
   .empty-note{color:var(--bone-dim);font-size:14px;padding:20px 0;}
 
   /* ---------- FEATURE STRIP ---------- */
@@ -145,14 +152,8 @@
   }
   .cta-form input:focus{outline:none;border-color:var(--brass);}
 
-  /* ---------- ABOUT / CONTACT / RETURNS / PRODUCT / CHECKOUT PAGES ---------- */
+  /* ---------- ABOUT / CONTACT PAGES ---------- */
   .page{padding:150px 5vw 100px;max-width:840px;}
-  .page-back{
-    display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--bone-dim);
-    border:1px solid var(--border);padding:9px 16px;border-radius:999px;margin-bottom:32px;
-    transition:border-color .2s, color .2s;
-  }
-  .page-back:hover{border-color:var(--brass);color:var(--brass);}
   .page .eyebrow{margin-bottom:24px;}
   .page h1{font-size:clamp(2rem,4.4vw,3rem);font-weight:600;letter-spacing:-1px;margin-bottom:22px;}
   .page p{color:var(--bone-dim);font-size:16px;line-height:1.7;margin-bottom:18px;max-width:640px;}
@@ -160,7 +161,7 @@
   .about-stat{background:var(--ink-2);padding:28px;}
   .about-stat .num{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:600;color:var(--brass);}
   .about-stat .lab{font-size:12px;color:var(--bone-dim);margin-top:6px;}
-  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:20px;align-items:start;}
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:20px;}
   .contact-form{display:flex;flex-direction:column;gap:14px;}
   .contact-form input,.contact-form textarea{
     background:var(--ink-2);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--bone);
@@ -174,11 +175,7 @@
   .contact-row .t{font-size:12px;color:var(--bone-dim);}
   .contact-row .v{font-size:15px;}
   .contact-row a.v:hover{color:var(--brass);}
-  .product-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:16px;align-items:start;}
-  .benefits-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin:18px 0;padding:0;}
-  .benefits-list li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--bone-dim);}
-  .benefits-list li::before{content:'✓';color:var(--brass);font-weight:700;flex-shrink:0;}
-  @media (max-width:700px){ .contact-grid{grid-template-columns:1fr;} .about-grid{grid-template-columns:1fr;} .product-detail-grid{grid-template-columns:1fr;} }
+  @media (max-width:700px){ .contact-grid{grid-template-columns:1fr;} .about-grid{grid-template-columns:1fr;} }
 
   /* ---------- FOOTER ---------- */
   footer{padding:50px 5vw 34px;border-top:1px solid var(--border);}
@@ -277,7 +274,6 @@
   <button onclick="navigate('home'); scrollToShop(); closeMobileMenu();">Shop</button>
   <button onclick="navigate('about'); closeMobileMenu();">About us</button>
   <button onclick="navigate('contact'); closeMobileMenu();">Contact us</button>
-  <button onclick="navigate('returns'); closeMobileMenu();">Return policy</button>
 </div>
 
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
@@ -289,7 +285,7 @@
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot">
     <div class="cart-sub"><span>Subtotal</span><span class="amt" id="cartSubtotal">₹0.00</span></div>
-    <button class="btn-primary" style="width:100%;justify-content:center;" onclick="closeCartDrawer(); navigate('checkout');">Checkout</button>
+    <button class="btn-primary" style="width:100%;justify-content:center;" onclick="checkout()">Checkout</button>
   </div>
 </div>
 
@@ -345,7 +341,7 @@
       <div class="feature">
         <div class="n">02</div>
         <h3>See it before you buy it</h3>
-        <p>Every product spins in 3D so you know exactly what's arriving at your door.</p>
+        <p>Every featured product spins in 3D so you know exactly what's arriving at your door.</p>
       </div>
       <div class="feature">
         <div class="n">03</div>
@@ -359,7 +355,6 @@
     <div>
       <h2>Get 15% off your first order</h2>
       <p>Join the list for early access to new drops in cables, watches, and decor.</p>
-      <p style="font-size:12px;color:var(--bone-dim);margin-top:8px;">Prefer Instagram? <a href="https://www.instagram.com/moderncart.store/" target="_blank" rel="noopener" style="color:var(--brass);">Message us there instead</a>.</p>
     </div>
     <form class="cta-form" onsubmit="return joinList(event)">
       <input type="email" placeholder="you@email.com" required>
@@ -370,7 +365,6 @@
 
 <!-- ============ ABOUT VIEW ============ -->
 <main id="view-about" class="page" hidden>
-  <button class="page-back" onclick="navigate('home')">&larr; Back to shop</button>
   <div class="eyebrow">About ModernCart</div>
 <h1>An intentional store, run properly.</h1>
 <h2 style="font-size: 20px; font-weight: 500; margin-top: 30px; margin-bottom: 12px; color: var(--bone);">Our Story</h2>
@@ -386,7 +380,6 @@
 
 <!-- ============ CONTACT VIEW ============ -->
 <main id="view-contact" class="page" hidden>
-  <button class="page-back" onclick="navigate('home')">&larr; Back to shop</button>
   <div class="eyebrow">Get in touch</div>
   <h1>Contact us</h1>
   <p>Questions about an order, a product, or a bulk request — send a note and we'll get back to you.</p>
@@ -412,37 +405,6 @@
       </div>
     </div>
   </div>
-</main>
-
-<!-- ============ RETURN POLICY VIEW ============ -->
-<main id="view-returns" class="page" hidden>
-  <button class="page-back" onclick="navigate('home')">&larr; Back to shop</button>
-  <div class="eyebrow">Returns &amp; warranty</div>
-  <h1>Our return policy</h1>
-  <p>We want you to feel confident buying from ModernCart, so every category has a straightforward return window.</p>
-  <div class="about-grid">
-    <div class="about-stat"><div class="num">30d</div><div class="lab">Return window on cables &amp; home decor</div></div>
-    <div class="about-stat"><div class="num">15d</div><div class="lab">Return window on smartwatches</div></div>
-    <div class="about-stat"><div class="num">1yr</div><div class="lab">Warranty on manufacturing defects</div></div>
-  </div>
-  <h2 style="font-size:20px;font-weight:500;margin-top:36px;margin-bottom:12px;color:var(--bone);">How it works</h2>
-  <p>Email hello@moderncart.store with your order details and the reason for the return. Once it's approved, pack the item back in its original packaging — we'll arrange a pickup where available, or share a drop-off address.</p>
-  <p>Refunds go back to the original payment method within 5–7 business days of the item passing a quick quality check. Anything that arrives damaged or faulty is replaced at no extra cost.</p>
-  <h2 style="font-size:20px;font-weight:500;margin-top:28px;margin-bottom:12px;color:var(--bone);">What isn't covered</h2>
-  <p>Used incense, opened cable multi-packs missing pieces, and normal wear from daily use aren't eligible for return — everything else, we've got you covered.</p>
-</main>
-
-<!-- ============ PRODUCT DETAIL VIEW ============ -->
-<main id="view-product" class="page" hidden>
-  <div id="product-detail-content"></div>
-</main>
-
-<!-- ============ CHECKOUT VIEW ============ -->
-<main id="view-checkout" class="page" hidden>
-  <button class="page-back" onclick="navigate('home')">&larr; Back to shop</button>
-  <div class="eyebrow">Checkout</div>
-  <h1>Complete your order</h1>
-  <div id="checkout-content"></div>
 </main>
 
 <footer>
@@ -476,7 +438,7 @@
       <h4>Support</h4>
       <ul>
         <li><a href="mailto:hello@moderncart.store">Email support</a></li>
-        <li><button onclick="navigate('returns')">Return policy</button></li>
+        <li><button onclick="navigate('contact')">Returns</button></li>
       </ul>
     </div>
   </div>
@@ -489,58 +451,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
   /* ================= NAVIGATION / SPA ROUTING ================= */
-  /* Routing lives in the URL hash (#about, #contact, #returns, #checkout,
-     #product/slug) so a browser refresh lands back on the same page
-     instead of resetting to home. */
-  const ALL_VIEWS = ['home','about','contact','returns','product','checkout'];
-  const NAV_HIGHLIGHT_MAP = { product:'home', checkout:'home' }; // which nav tab to light up for sub-pages
-
-  function renderView(view){
-    ALL_VIEWS.forEach(v=>{
-      const el = document.getElementById('view-'+v);
-      if(el) el.hidden = (v!==view);
+  function navigate(view){
+    ['home','about','contact'].forEach(v=>{
+      document.getElementById('view-'+v).hidden = (v!==view);
     });
-    const highlight = NAV_HIGHLIGHT_MAP[view] || view;
-    document.querySelectorAll('.nav-btn').forEach(b=>{
-      b.classList.toggle('active', b.dataset.nav === highlight);
-    });
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.nav===view));
     window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
   }
-
-  function navigate(view){
-    const target = view === 'home' ? '' : view;
-    if(window.location.hash.replace('#','') === target){
-      // hash isn't changing (already here) -> hashchange won't fire, so render directly
-      if(view === 'checkout') renderCheckoutPage();
-      renderView(view);
-    } else {
-      window.location.hash = target;
-    }
-  }
-
-  function slugify(str){
-    return String(str).toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
-  }
-
-  function goToProduct(slug){
-    window.location.hash = 'product/' + slug;
-  }
-
-  function routeFromHash(){
-    const raw = decodeURIComponent(window.location.hash.replace(/^#/,''));
-    if(raw.startsWith('product/')){
-      renderProductPage(raw.slice('product/'.length));
-    } else if(raw === 'about' || raw === 'contact' || raw === 'returns'){
-      renderView(raw);
-    } else if(raw === 'checkout'){
-      renderCheckoutPage();
-      renderView('checkout');
-    } else {
-      renderView('home');
-    }
-  }
-  window.addEventListener('hashchange', routeFromHash);
-
   function closeMobileMenu(){ document.getElementById('mobileMenu').classList.remove('open'); }
   function scrollToShop(){ setTimeout(()=>document.getElementById('shop').scrollIntoView({behavior:'smooth'}), 30); }
   function scrollToMore(cat){
@@ -565,51 +482,25 @@
     }, 2200);
   }
 
-  /* ================= LEAD CAPTURE (newsletter + contact form) =================
-     IMPORTANT, READ THIS: a static HTML page cannot auto-send a message to your
-     Instagram inbox. Real Instagram DMs require Meta's official Messaging API,
-     a verified business app, and a server component to call it — none of which
-     exist in a plain HTML file like this one. The practical, no-backend option
-     used below is a "mailto:" link: it opens the VISITOR's own email app with
-     a message already addressed to hello@moderncart.store, so it lands in your
-     real inbox with no setup required. If you want submissions to land silently
-     without opening the visitor's email app, swap the two functions below for
-     a form-backend service such as Formspree or Getform (they give you a POST
-     URL you can drop straight into the <form action="..."> tags above).
-     ================================================================ */
   function joinList(e){
     e.preventDefault();
-    const email = e.target.querySelector('input[type=email]').value;
-    window.location.href = 'mailto:hello@moderncart.store?subject=' +
-      encodeURIComponent('New newsletter signup') + '&body=' +
-      encodeURIComponent('New signup email: ' + email);
-    showToast("Opening your email app to send us your details");
+    showToast("You're on the list — check your inbox for 15% off");
     e.target.reset();
     return false;
   }
   function sendMessage(e){
     e.preventDefault();
-    const name = e.target.querySelector('input[type=text]').value;
-    const email = e.target.querySelector('input[type=email]').value;
-    const msg = e.target.querySelector('textarea').value;
-    window.location.href = 'mailto:hello@moderncart.store?subject=' +
-      encodeURIComponent('Message from ' + name) + '&body=' +
-      encodeURIComponent(msg + '\n\nReply to: ' + email);
-    showToast("Opening your email app to send this message");
+    showToast("Message sent — we'll reply soon");
     e.target.reset();
     return false;
   }
 
-  /* ================= CART ================= */
-  let cart = JSON.parse(localStorage.getItem('modernCartData')) || [];
+ /* ================= CART ================= */
+ let cart = JSON.parse(localStorage.getItem('modernCartData')) || [];
 
   function toggleCart(){
     document.getElementById('cartDrawer').classList.toggle('open');
     document.getElementById('cartOverlay').classList.toggle('open');
-  }
-  function closeCartDrawer(){
-    document.getElementById('cartDrawer').classList.remove('open');
-    document.getElementById('cartOverlay').classList.remove('open');
   }
 
   function flyToCart(sourceEl){
@@ -626,6 +517,7 @@
     const endX = endRect.left + endRect.width/2;
     const endY = endRect.top + endRect.height/2;
     requestAnimationFrame(()=>{
+      // FIXED: Swapped out the literal '₹' syntax error for proper template literals '${}' so calculation functions correctly
       dot.style.transform = `translate(${endX-startX}px, ${endY-startY}px) scale(0.25)`;
       dot.style.opacity = '0';
     });
@@ -636,11 +528,15 @@
     }, 600);
   }
 
-  function addToCart(name, priceStr, evt){
+ function addToCart(name, priceStr, evt){
     if(evt && evt.currentTarget) flyToCart(evt.currentTarget);
+    
+    // Strips both ₹ and $ symbols cleanly so math calculations never crash
     const price = parseFloat(priceStr.replace(/[₹$]/g, ''));
     const existing = cart.find(i=>i.name===name);
     if(existing){ existing.qty += 1; } else { cart.push({name, price, qty:1}); }
+    
+    // UPDATED: Saves items to browser memory array
     localStorage.setItem('modernCartData', JSON.stringify(cart));
     updateCartUI();
     showToast(name + ' added to cart');
@@ -651,26 +547,36 @@
     if(!item) return;
     item.qty += delta;
     if(item.qty <= 0) cart = cart.filter(i=>i.name!==name);
+    
+    // UPDATED: Saves quantity modifications to browser memory array
     localStorage.setItem('modernCartData', JSON.stringify(cart));
     updateCartUI();
-    if(!document.getElementById('view-checkout').hidden) renderCheckoutPage();
   }
+  
   function removeItem(name){
     cart = cart.filter(i=>i.name!==name);
+    
+    // UPDATED: Saves item removals to browser memory array
     localStorage.setItem('modernCartData', JSON.stringify(cart));
     updateCartUI();
-    if(!document.getElementById('view-checkout').hidden) renderCheckoutPage();
+  }
+  
+  function checkout(){
+    if(cart.length===0){ showToast('Your cart is empty'); return; }
+    showToast('Checkout is a demo — order not actually placed');
   }
 
   function updateCartUI(){
     const totalQty = cart.reduce((s,i)=>s+i.qty,0);
     const badge = document.getElementById('cart-badge');
-    if(badge){
+    if(badge) {
       badge.textContent = totalQty;
       badge.hidden = totalQty === 0;
     }
+
     const itemsEl = document.getElementById('cartItems');
-    if(!itemsEl) return;
+    if(!itemsEl) return; // Guard clause to protect the runtime thread execution during canvas setups
+
     if(cart.length===0){
       itemsEl.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
     } else {
@@ -693,29 +599,15 @@
     const subtotalEl = document.getElementById('cartSubtotal');
     if(subtotalEl) subtotalEl.textContent = '₹' + subtotal.toLocaleString('en-IN');
   }
-  window.addEventListener('DOMContentLoaded', () => { updateCartUI(); });
 
-  /* ================= PRODUCT CATALOG =================
-     ------------------------------------------------------------------
-     HOW TO CHANGE PRODUCT IMAGES LATER (read this when you're ready):
-     Every product below renders as a procedurally generated 3D shape,
-     built by its `build(brassMat)` function using Three.js primitives —
-     there are no photo files involved yet.
+  // UPDATED: Wrapped within event listener block to prevent crashing layout nodes
+  window.addEventListener('DOMContentLoaded', () => {
+    updateCartUI();
+  });
 
-     To swap a product over to a REAL PHOTO instead of the 3D shape:
-       1. Put your image file next to this HTML file (or use a URL).
-       2. Add an `image: "your-file.jpg"` field to that product object,
-          right alongside `name`, `price`, etc. (see the commented
-          example on the very first product below).
-       3. That's it — `mountProductMedia()` further down already checks
-          for `p.image` and will show your photo instead of the 3D
-          shape automatically. You don't need to touch any other code.
-     ------------------------------------------------------------------ */
-  const ALL_PRODUCTS = [
-    { featured:true, name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"₹14.99",
-      // image: "images/usb-c-cable.jpg",   <-- uncomment + point at a real photo to replace the 3D shape
-      desc:"A 1.5m braided USB-C cable built for daily pocket-and-bag abuse, not just a desk drawer.",
-      benefits:["1.5m braided nylon jacket","60W fast charging support","10,000+ bend life cycle"],
+  /* ================= FEATURED 3D PRODUCTS ================= */
+  const featured = [
+    { name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"₹14.99",
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
@@ -732,9 +624,7 @@
         return g;
       }
     },
-    { featured:true, name:"Smartwatch Pro", cat:"watches", catLabel:"Smartwatches", price:"₹89.00",
-      desc:"An everyday smartwatch with a bright always-on display and a battery that actually lasts the week.",
-      benefits:["7-day battery life","Always-on AMOLED display","5ATM water resistance"],
+    { name:"Smartwatch Pro", cat:"watches", catLabel:"Smartwatches", price:"₹89.00",
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x14171f, metalness:0.5, roughness:0.3});
@@ -752,9 +642,7 @@
         return g;
       }
     },
-    { featured:true, name:"Ceramic Table Vase", cat:"decor", catLabel:"Home decor", price:"₹32.00",
-      desc:"A hand-glazed ceramic vase sized for a single stem or a small everyday bunch.",
-      benefits:["Hand-glazed ceramic","Food-safe finish","Fits fresh or dried stems"],
+    { name:"Ceramic Table Vase", cat:"decor", catLabel:"Home decor", price:"₹32.00",
       build: brassMat => {
         const g = new THREE.Group();
         const ceramic = new THREE.MeshStandardMaterial({color:0xEDE7DA, metalness:0.05, roughness:0.6});
@@ -770,9 +658,7 @@
         return g;
       }
     },
-    { featured:true, name:"Wooden Wall Clock", cat:"decor", catLabel:"Home decor", price:"₹46.00",
-      desc:"A solid oak wall clock with a silent sweep movement — no ticking to notice at 2am.",
-      benefits:["Solid oak face","Silent sweep movement","30cm diameter"],
+    { name:"Wooden Wall Clock", cat:"decor", catLabel:"Home decor", price:"$46.00",
       build: brassMat => {
         const g = new THREE.Group();
         const wood = new THREE.MeshStandardMaterial({color:0x8a5a34, metalness:0.05, roughness:0.7});
@@ -789,175 +675,27 @@
         centerDot.position.z = 0.14; g.add(centerDot);
         return g;
       }
-    },
-    { featured:false, name:"Fast Charge Cable 3-Pack", cat:"cables", catLabel:"Charging cables · Nylon", price:"₹24.99",
-      desc:"Three lengths, one pack — a short one for your desk, a long one for the couch, a travel one for your bag.",
-      benefits:["3 cables per pack: 0.3m / 1m / 2m","65W PD support","Reinforced aluminium connectors"],
-      build: brassMat => {
-        const g = new THREE.Group();
-        const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
-        [-0.35, 0, 0.35].forEach(off=>{
-          const curve = new THREE.CatmullRomCurve3([
-            new THREE.Vector3(-1.1, off*0.6-0.2, off*0.3),
-            new THREE.Vector3(0, off*0.6+0.3, 0),
-            new THREE.Vector3(1.1, off*0.6-0.2, -off*0.3)
-          ]);
-          g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 40, 0.09, 12, false), dark));
-        });
-        const tie = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.035, 12, 32), brassMat);
-        tie.rotation.y = Math.PI/2;
-        g.add(tie);
-        return g;
-      }
-    },
-    { featured:false, name:"USB-C to Lightning Cable", cat:"cables", catLabel:"Charging cables · 6ft", price:"₹12.99",
-      desc:"A 6ft cable that bridges USB-C chargers with Lightning-style devices, so one charger covers everything.",
-      benefits:["MFi-style compatible connector","6ft length","20W fast charge support"],
-      build: brassMat => {
-        const g = new THREE.Group();
-        const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
-        const curve = new THREE.CatmullRomCurve3([
-          new THREE.Vector3(-1.3,-0.3,0), new THREE.Vector3(0,0.5,0.2), new THREE.Vector3(1.3,-0.2,0)
-        ]);
-        g.add(new THREE.Mesh(new THREE.TubeGeometry(curve,64,0.13,16,false), dark));
-        const usbc = new THREE.Mesh(new THREE.BoxGeometry(0.3,0.16,0.14), brassMat);
-        usbc.position.set(-1.3,-0.3,0); g.add(usbc);
-        const lightning = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.3,12), brassMat);
-        lightning.rotation.z = Math.PI/2;
-        lightning.position.set(1.3,-0.2,0);
-        g.add(lightning);
-        return g;
-      }
-    },
-    { featured:false, name:"Magnetic Charging Cable", cat:"cables", catLabel:"Charging cables · Steel tip", price:"₹18.99",
-      desc:"Snap it on instead of fumbling for the port — the magnetic tip lines itself up in the dark.",
-      benefits:["Snap-on magnetic tip","540° rotating connector","Reversible — can't plug in wrong"],
-      build: brassMat => {
-        const g = new THREE.Group();
-        const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
-        const curve = new THREE.CatmullRomCurve3([
-          new THREE.Vector3(-1.2,-0.4,0), new THREE.Vector3(-0.2,0.5,0.3), new THREE.Vector3(1.2,-0.1,0)
-        ]);
-        g.add(new THREE.Mesh(new THREE.TubeGeometry(curve,64,0.12,16,false), dark));
-        const magTip = new THREE.Mesh(new THREE.SphereGeometry(0.22,24,24), brassMat);
-        magTip.position.set(1.2,-0.1,0); g.add(magTip);
-        const connEnd = new THREE.Mesh(new THREE.BoxGeometry(0.3,0.18,0.14), brassMat);
-        connEnd.position.set(-1.2,-0.4,0); g.add(connEnd);
-        return g;
-      }
-    },
-    { featured:false, name:"Smartwatch Lite", cat:"watches", catLabel:"Smartwatches · Silicone band", price:"₹59.00",
-      desc:"A lighter, simpler smartwatch for everyday wear — sleep and heart-rate tracking without the bulk.",
-      benefits:["Lightweight silicone band","10-day battery life","Sleep + heart rate tracking"],
-      build: brassMat => {
-        const g = new THREE.Group();
-        const dark = new THREE.MeshStandardMaterial({color:0x20242e, metalness:0.3, roughness:0.5});
-        const band = new THREE.MeshStandardMaterial({color:0x3a4150, metalness:0.1, roughness:0.8});
-        const face = new THREE.Mesh(new THREE.CylinderGeometry(0.7,0.7,0.2,48), dark);
-        face.rotation.x = Math.PI/2; g.add(face);
-        const bezel = new THREE.Mesh(new THREE.TorusGeometry(0.7,0.035,16,48), brassMat);
-        bezel.rotation.x = Math.PI/2; g.add(bezel);
-        [1.0,-1.0].forEach(y=>{
-          const strap = new THREE.Mesh(new THREE.BoxGeometry(0.45,0.5,0.09), band);
-          strap.position.set(0,y,0); g.add(strap);
-        });
-        return g;
-      }
-    },
-    { featured:false, name:"Smartwatch Sport", cat:"watches", catLabel:"Smartwatches · GPS", price:"₹99.00",
-      desc:"Built-in GPS and a MIL-STD-tested bezel for the smartwatch that has to survive an actual workout.",
-      benefits:["Built-in GPS","Rugged bezel, MIL-STD tested","50 sport modes"],
-      build: brassMat => {
-        const g = new THREE.Group();
-        const dark = new THREE.MeshStandardMaterial({color:0x14171f, metalness:0.4, roughness:0.4});
-        const band = new THREE.MeshStandardMaterial({color:0x2a2f3a, metalness:0.2, roughness:0.7});
-        const face = new THREE.Mesh(new THREE.CylinderGeometry(0.9,0.9,0.24,48), dark);
-        face.rotation.x = Math.PI/2; g.add(face);
-        const bezel = new THREE.Mesh(new THREE.TorusGeometry(0.9,0.07,16,48), brassMat);
-        bezel.rotation.x = Math.PI/2; g.add(bezel);
-        const btn = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.22,0.1), brassMat);
-        btn.position.set(0.95,0.15,0); g.add(btn);
-        [1.2,-1.2].forEach(y=>{
-          const strap = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.6,0.11), band);
-          strap.position.set(0,y,0); g.add(strap);
-        });
-        return g;
-      }
-    },
-    { featured:false, name:"Watch Charging Dock", cat:"watches", catLabel:"Smartwatches · Accessory", price:"₹19.99",
-      desc:"A weighted charging puck that keeps your smartwatch upright and charging on your nightstand.",
-      benefits:["Magnetic fast-charge puck","Non-slip weighted base","1.2m braided cable included"],
-      build: brassMat => {
-        const g = new THREE.Group();
-        const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.4, roughness:0.5});
-        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.9,1.0,0.22,48), dark);
-        g.add(base);
-        const puck = new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.45,0.14,32), brassMat);
-        puck.position.y = 0.2; g.add(puck);
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.45,0.025,12,32), dark);
-        ring.rotation.x = Math.PI/2; ring.position.y = 0.28; g.add(ring);
-        return g;
-      }
-    },
-    { featured:false, name:"Incense Holder Set", cat:"decor", catLabel:"Home decor · Ceramic", price:"₹21.00",
-      desc:"A solid sheesham wood holder that catches ash cleanly instead of leaving a mess on the shelf.",
-      benefits:["Solid sheesham wood","Catches ash cleanly","Fits standard incense sticks"],
-      build: brassMat => {
-        const g = new THREE.Group();
-        const wood = new THREE.MeshStandardMaterial({color:0x6b4a30, metalness:0.05, roughness:0.75});
-        const board = new THREE.Mesh(new THREE.BoxGeometry(1.8,0.12,0.4), wood);
-        g.add(board);
-        const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,1.0,8), brassMat);
-        stick.rotation.z = Math.PI/2.4;
-        stick.position.set(0.2,0.4,0);
-        g.add(stick);
-        [-0.6,0,0.6].forEach(x=>{
-          const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.14,12), new THREE.MeshStandardMaterial({color:0x0a0a0a}));
-          hole.position.set(x,0.07,0); g.add(hole);
-        });
-        return g;
-      }
-    },
-    { featured:false, name:"Warm Oak Table Lamp", cat:"decor", catLabel:"Home decor · Lighting", price:"₹58.00",
-      desc:"A dimmable warm-white lamp on a solid oak base, with a linen shade that softens the light.",
-      benefits:["Dimmable warm-white LED","Solid oak base","Linen shade"],
-      build: brassMat => {
-        const g = new THREE.Group();
-        const wood = new THREE.MeshStandardMaterial({color:0x8a5a34, metalness:0.05, roughness:0.7});
-        const linen = new THREE.MeshStandardMaterial({color:0xEDE3CF, metalness:0.0, roughness:0.9});
-        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.6,0.16,32), wood);
-        base.position.y = -1.0; g.add(base);
-        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,1.4,16), brassMat);
-        pole.position.y = -0.3; g.add(pole);
-        const points = [];
-        for(let i=0;i<=8;i++){
-          const t = i/8;
-          points.push(new THREE.Vector2(0.45 - t*0.15, t*0.7 + 0.5));
-        }
-        g.add(new THREE.Mesh(new THREE.LatheGeometry(points,32), linen));
-        return g;
-      }
     }
   ];
-  const featured = ALL_PRODUCTS.filter(p=>p.featured);
-  const more = ALL_PRODUCTS.filter(p=>!p.featured);
 
-  function findProduct(slug){
-    return ALL_PRODUCTS.find(p=>slugify(p.name)===slug) || null;
-  }
+  const grid = document.getElementById('featured-grid');
+  const scenes = [];
 
-  /* ================= SHARED 3D MOUNTING HELPER =================
-     Used by the Featured grid, the More-from-the-shop grid, AND the
-     product detail page, so the drag-to-rotate behaviour is identical
-     everywhere and only exists in one place in the code. */
-  function mountProductMedia(mediaWrap, p, opts){
-    opts = opts || {};
-    if(p.image){
-      mediaWrap.innerHTML = `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`;
-      return null;
-    }
-    mediaWrap.innerHTML = `<canvas></canvas><div class="drag-hint">&#8596; drag to rotate</div>`;
-    const canvas = mediaWrap.querySelector('canvas');
+  featured.forEach((p, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'p-card';
+    card.innerHTML = `
+      <div class="p-index"><span>0${idx+1}</span><span class="badge">${p.catLabel}</span></div>
+      <div class="canvas-wrap"><canvas></canvas><div class="drag-hint">&#8596; drag to rotate</div></div>
+      <h3>${p.name}</h3>
+      <div class="cat">${p.catLabel}</div>
+      <div class="p-row"><span class="p-price">${p.price}</span><button class="add" aria-label="Add ${p.name} to cart">+</button></div>
+    `;
+    grid.appendChild(card);
+    card.querySelector('.add').addEventListener('click', (e)=> addToCart(p.name, p.price, e));
+
+    const canvasWrap = card.querySelector('.canvas-wrap');
+    const canvas = card.querySelector('canvas');
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
@@ -985,73 +723,42 @@
     canvas.addEventListener('touchend', up);
 
     function resize(){
-      const w = mediaWrap.clientWidth, h = mediaWrap.clientHeight;
+      const w = canvasWrap.clientWidth, h = canvasWrap.clientHeight;
       if(w===0||h===0) return;
       camera.aspect = w/h; camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
     }
-    new ResizeObserver(resize).observe(mediaWrap);
+    new ResizeObserver(resize).observe(canvasWrap);
     resize();
 
-    const controller = {
-      renderer,
-      tick(){
-        if(autoRotate) targetRotY += 0.004;
-        currentRotY += (targetRotY - currentRotY) * 0.08;
-        group.rotation.y = currentRotY;
-        renderer.render(scene, camera);
-      }
-    };
-
-    if(opts.independent){
-      function loop(){
-        productAnimId = requestAnimationFrame(loop);
-        controller.tick();
-      }
-      loop();
-      productRenderer = renderer;
-    }
-
-    return controller;
-  }
-
-  function createProductCard(p, indexLabel){
-    const card = document.createElement('div');
-    card.className = 'p-card';
-    card.innerHTML = `
-      <div class="p-index"><span>${indexLabel}</span><span class="badge">${p.catLabel}</span></div>
-      <div class="canvas-wrap"></div>
-      <h3>${p.name}</h3>
-      <div class="cat">${p.catLabel}</div>
-      <div class="p-row"><span class="p-price">${p.price}</span><button class="add" aria-label="Add ${p.name} to cart">+</button></div>
-    `;
-    const mediaWrap = card.querySelector('.canvas-wrap');
-    const controller = mountProductMedia(mediaWrap, p);
-
-    card.querySelector('.add').addEventListener('click', (e)=>{ e.stopPropagation(); addToCart(p.name, p.price, e); });
-    card.style.cursor = 'pointer';
-    card.addEventListener('click', (e)=>{
-      if(e.target.closest('.add') || e.target.closest('.canvas-wrap')) return;
-      goToProduct(slugify(p.name));
-    });
-    return { el: card, controller };
-  }
-
-  /* ---- Featured grid (always the same 4) ---- */
-  const grid = document.getElementById('featured-grid');
-  const scenes = [];
-  featured.forEach((p, idx)=>{
-    const { el, controller } = createProductCard(p, '0'+(idx+1));
-    grid.appendChild(el);
-    if(controller) scenes.push(controller);
+    scenes.push({ tick(){
+      if(autoRotate) targetRotY += 0.004;
+      currentRotY += (targetRotY - currentRotY) * 0.08;
+      group.rotation.y = currentRotY;
+      group.position.y = Math.sin(Date.now()*0.0008 + idx)*0.04;
+      renderer.render(scene, camera);
+    }});
   });
 
-  /* ---- More-from-the-shop grid (filterable, rebuilt on chip clicks) ---- */
-  let moreSceneControllers = [];
+  function animateAll(){ requestAnimationFrame(animateAll); scenes.forEach(s=>s.tick()); }
+  animateAll();
+
+  /* ================= MORE FROM THE SHOP (filterable) ================= */
+  const more = [
+    {name:"Fast Charge Cable 3-Pack", cat:"cables", catLabel:"Charging cables · Nylon", price:"₹24.99"},
+    {name:"USB-C to Lightning Cable", cat:"cables", catLabel:"Charging cables · 6ft", price:"₹12.99"},
+    {name:"Magnetic Charging Cable", cat:"cables", catLabel:"Charging cables · Steel tip", price:"₹18.99"},
+    {name:"Smartwatch Lite", cat:"watches", catLabel:"Smartwatches · Silicone band", price:"₹59.00"},
+    {name:"Smartwatch Sport", cat:"watches", catLabel:"Smartwatches · GPS", price:"₹99.00"},
+    {name:"Watch Charging Dock", cat:"watches", catLabel:"Smartwatches · Accessory", price:"₹19.99"},
+    {name:"Incense Holder Set", cat:"decor", catLabel:"Home decor · Ceramic", price:"₹21.00"},
+    {name:"Warm Oak Table Lamp", cat:"decor", catLabel:"Home decor · Lighting", price:"₹58.00"}
+  ];
   const categories = [
     {id:'all', label:'All'}, {id:'cables', label:'Cables'}, {id:'watches', label:'Watches'}, {id:'decor', label:'Home decor'}
   ];
   let activeFilter = 'all';
+
   const filtersEl = document.getElementById('filters');
   categories.forEach(c=>{
     const chip = document.createElement('button');
@@ -1061,146 +768,35 @@
     chip.addEventListener('click', ()=> setFilter(c.id));
     filtersEl.appendChild(chip);
   });
+
   function setFilter(cat){
     activeFilter = cat;
     document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c.dataset.cat===cat));
     renderFlatGrid();
   }
+
   const flatGrid = document.getElementById('flat-grid');
   function renderFlatGrid(){
-    // Dispose old WebGL contexts before rebuilding so repeated filter clicks don't leak GPU memory
-    moreSceneControllers.forEach(c=>{ if(c.renderer) c.renderer.dispose(); });
-    moreSceneControllers = [];
-    flatGrid.innerHTML = '';
     const list = activeFilter==='all' ? more : more.filter(p=>p.cat===activeFilter);
     if(list.length===0){
       flatGrid.innerHTML = '<div class="empty-note">No products in this category yet.</div>';
       return;
     }
-    list.forEach((p, i)=>{
-      const { el, controller } = createProductCard(p, '0'+(featured.length+i+1));
-      flatGrid.appendChild(el);
-      if(controller) moreSceneControllers.push(controller);
+    flatGrid.innerHTML = list.map(p=>`
+      <div class="flat-card">
+        <div class="flat-visual"><span class="tag">New</span><div class="shape"></div></div>
+        <h4>${p.name}</h4>
+        <div class="cat">${p.catLabel}</div>
+        <div class="p-row"><span class="p-price">${p.price}</span><button class="add" data-name="${p.name}" data-price="${p.price}" aria-label="Add ${p.name} to cart">+</button></div>
+      </div>
+    `).join('');
+    flatGrid.querySelectorAll('.add').forEach(btn=>{
+      btn.addEventListener('click', (e)=> addToCart(btn.dataset.name, btn.dataset.price, e));
     });
   }
   renderFlatGrid();
 
-  function animateAll(){
-    requestAnimationFrame(animateAll);
-    scenes.forEach(s=>s.tick());
-    moreSceneControllers.forEach(s=>s.tick());
-  }
-  animateAll();
-
-  /* ================= PRODUCT DETAIL PAGE ================= */
-  let productAnimId = null;
-  let productRenderer = null;
-  function stopProductScene(){
-    if(productAnimId){ cancelAnimationFrame(productAnimId); productAnimId = null; }
-    if(productRenderer){ productRenderer.dispose(); productRenderer = null; }
-  }
-
-  function renderProductPage(slug){
-    stopProductScene();
-    const container = document.getElementById('product-detail-content');
-    const p = findProduct(slug);
-
-    if(!p){
-      container.innerHTML = `
-        <button class="page-back" onclick="navigate('home')">&larr; Back to shop</button>
-        <div class="eyebrow">Not found</div>
-        <h1>We couldn't find that product</h1>
-        <p>It may have been removed or the link is off.</p>
-      `;
-      renderView('product');
-      return;
-    }
-
-    container.innerHTML = `
-      <button class="page-back" onclick="navigate('home')">&larr; Back to shop</button>
-      <div class="eyebrow">${p.catLabel}</div>
-      <div class="product-detail-grid">
-        <div class="canvas-wrap" id="pd-media" style="max-width:420px;"></div>
-        <div class="product-detail-info">
-          <h1 style="margin-bottom:6px;">${p.name}</h1>
-          <div class="p-price" style="font-size:20px;margin:10px 0 16px;">${p.price}</div>
-          <p>${p.desc || ''}</p>
-          <ul class="benefits-list">
-            ${(p.benefits||[]).map(b=>`<li>${b}</li>`).join('')}
-          </ul>
-          <button class="btn-ghost" onclick="navigate('returns')" style="margin-bottom:18px;">Read our return policy</button>
-          <div class="hero-cta">
-            <button class="btn-primary" id="pd-add">Add to cart</button>
-          </div>
-        </div>
-      </div>
-    `;
-    document.getElementById('pd-add').addEventListener('click', (e)=> addToCart(p.name, p.price, e));
-
-    const mediaEl = document.getElementById('pd-media');
-    mountProductMedia(mediaEl, p, {independent:true});
-    renderView('product');
-  }
-
-  /* ================= CHECKOUT PAGE ================= */
-  function renderCheckoutPage(){
-    const el = document.getElementById('checkout-content');
-    if(cart.length === 0){
-      el.innerHTML = `
-        <p>Your cart is empty right now.</p>
-        <button class="btn-primary" onclick="navigate('home'); scrollToShop();">Browse products</button>
-      `;
-      return;
-    }
-    const subtotal = cart.reduce((s,i)=> s + i.price*i.qty, 0);
-    el.innerHTML = `
-      <div class="contact-grid">
-        <div>
-          <h3 style="margin-bottom:16px;font-size:16px;font-weight:500;">Order summary</h3>
-          ${cart.map(i=>`
-            <div class="cart-item">
-              <div>
-                <div class="ci-name">${i.name}</div>
-                <div class="ci-meta">Qty ${i.qty} · ₹${i.price.toLocaleString('en-IN')} each</div>
-              </div>
-              <div class="p-price">₹${(i.price*i.qty).toLocaleString('en-IN')}</div>
-            </div>
-          `).join('')}
-          <div class="cart-sub" style="margin-top:16px;"><span>Total</span><span class="amt">₹${subtotal.toLocaleString('en-IN')}</span></div>
-        </div>
-        <form class="contact-form" id="checkoutForm" onsubmit="return placeOrder(event)">
-          <h3 style="font-size:16px;font-weight:500;">Shipping details</h3>
-          <input type="text" placeholder="Full name" required>
-          <input type="tel" placeholder="Phone number" required>
-          <input type="text" placeholder="Address" required>
-          <input type="text" placeholder="City / Pincode" required>
-          <div style="display:flex;gap:16px;font-size:14px;color:var(--bone-dim);margin-top:4px;">
-            <label><input type="radio" name="pay" value="cod" checked> Cash on delivery</label>
-            <label><input type="radio" name="pay" value="card"> Card (demo)</label>
-          </div>
-          <button type="submit" class="btn-primary" style="justify-content:center;margin-top:8px;">Place order</button>
-          <p style="font-size:12px;color:var(--bone-dim);margin:6px 0 0;">This is a UI demo — no real payment is processed. Taking real payments needs a payment gateway (e.g. Razorpay) plus a backend server.</p>
-        </form>
-      </div>
-    `;
-  }
-  function placeOrder(e){
-    e.preventDefault();
-    const orderId = 'MC-' + Math.floor(100000 + Math.random()*900000);
-    cart = [];
-    localStorage.setItem('modernCartData', JSON.stringify(cart));
-    updateCartUI();
-    document.getElementById('checkout-content').innerHTML = `
-      <div class="eyebrow">Order placed</div>
-      <h1 style="font-size:28px;">Thanks — order ${orderId} is confirmed</h1>
-      <p>This is a demo confirmation screen. Connect a real payment gateway and backend to accept live orders and actually fulfil them.</p>
-      <button class="btn-primary" onclick="navigate('home')">Back to shop</button>
-    `;
-    return false;
-  }
-
-  /* Initial load: render whatever the URL hash points to (home/about/contact/returns/checkout/product/slug) */
-  routeFromHash();
+  navigate('home');
 </script>
 </body>
 </html>

@@ -985,10 +985,14 @@
     canvas.addEventListener('touchend', up);
 
     function resize(){
-      const w = mediaWrap.clientWidth, h = mediaWrap.clientHeight;
+      const w = canvasWrap.clientWidth, h = canvasWrap.clientHeight;
       if(w===0||h===0) return;
-      camera.aspect = w/h; camera.updateProjectionMatrix();
+      camera.aspect = w/h; 
+      camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
+      // Forces the renderer to clear properly on mobile to prevent white blocks
+      renderer.setClearColor(0x000000, 0); 
+    }
     }
     new ResizeObserver(resize).observe(mediaWrap);
     resize();

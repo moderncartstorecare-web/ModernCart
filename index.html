@@ -87,13 +87,13 @@
   .sec-head h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:600;letter-spacing:-0.5px;}
   .sec-head p{color:var(--bone-dim);font-size:14px;max-width:340px;}
 
-  /* ---------- 3D PRODUCT CARDS (used for both Featured and More) ---------- */
+  /* ---------- 3D PRODUCT CARDS ---------- */
   .product-grid{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:20px;padding:0 5vw 100px;}
-  .p-card{background:var(--ink-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;min-width:0;transition:border-color .3s ease;}
+  .p-card{background:var(--ink-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;min-width:0;transition:border-color .3s ease;cursor:pointer;}
   .p-card:hover{border-color:var(--brass-dim);}
   .p-index{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--brass);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
   .p-index .badge{background:rgba(245,241,232,0.08);color:var(--bone-dim);padding:4px 9px;border-radius:999px;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.5px;text-transform:uppercase;}
-  .canvas-wrap{position:relative;width:100%;aspect-ratio:1/1;border-radius:10px;background:radial-gradient(circle at 30% 25%, #1c2129, #0a0d12);overflow:hidden;touch-action:pan-y;}
+  .canvas-wrap{position:relative;width:100%;aspect-ratio:1/1;min-height:180px;border-radius:10px;background:radial-gradient(circle at 30% 25%, #1c2129, #0a0d12);overflow:hidden;touch-action:pan-y;}
   .canvas-wrap canvas{width:100%!important;height:100%!important;display:block;cursor:grab;}
   .canvas-wrap:active canvas{cursor:grabbing;}
   .drag-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-dim);opacity:.65;pointer-events:none;white-space:nowrap;}
@@ -303,7 +303,7 @@
     <p>ModernCart Store brings curated goods, trending items, and household pieces — drag any product below to see it from every angle, right on this page.</p>
     <div class="hero-cta">
       <button class="btn-primary" onclick="scrollToShop()">Order Now&nbsp;→</button>
-<button class="btn-ghost" onclick="scrollToMore('all')">Explore store</button>
+      <button class="btn-ghost" onclick="scrollToMore('all')">Explore store</button>
     </div>
   </div>
 
@@ -372,12 +372,12 @@
 <main id="view-about" class="page" hidden>
   <button class="page-back" onclick="navigate('home')">&larr; Back to shop</button>
   <div class="eyebrow">About ModernCart</div>
-<h1>An intentional store, run properly.</h1>
-<h2 style="font-size: 20px; font-weight: 500; margin-top: 30px; margin-bottom: 12px; color: var(--bone);">Our Story</h2>
-<p><span style="color: var(--brass); font-weight: 600;">ModernCart</span> started with a simple, everyday frustration: ordering products online often feels like a gamble. Most items look flawless in edited photos, but look completely different when they finally show up at your front door. We believe shopping online should be completely transparent. So, we built a digital storefront where you don't have to guess. By integrating interactive 3D modeling directly into our collections, you can completely rotate, inspect, and evaluate every trending piece from every angle before you buy it. No surprises, no guesswork—just exactly what you expected.</p>
+  <h1>An intentional store, run properly.</h1>
+  <h2 style="font-size: 20px; font-weight: 500; margin-top: 30px; margin-bottom: 12px; color: var(--bone);">Our Story</h2>
+  <p><span style="color: var(--brass); font-weight: 600;">ModernCart</span> started with a simple, everyday frustration: ordering products online often feels like a gamble. Most items look flawless in edited photos, but look completely different when they finally show up at your front door. We believe shopping online should be completely transparent. So, we built a digital storefront where you don't have to guess. By integrating interactive 3D modeling directly into our collections, you can completely rotate, inspect, and evaluate every trending piece from every angle before you buy it. No surprises, no guesswork—just exactly what you expected.</p>
   
-<p>The store is personally run by Vishal Kashyap out of Delhi. Instead of trying to sell thousands of generic items averagely, <span style="color: var(--brass); font-weight: 600;">ModernCart</span> focuses entirely on sourcing a highly curated selection of products done exceptionally well. We track what's relevant right now, thoroughly testing every single item to ensure it balances striking design with genuine, long-lasting durability.</p>
-<div class="about-grid">
+  <p>The store is personally run by Vishal Kashyap out of Delhi. Instead of trying to sell thousands of generic items averagely, <span style="color: var(--brass); font-weight: 600;">ModernCart</span> focuses entirely on sourcing a highly curated selection of products done exceptionally well. We track what's relevant right now, thoroughly testing every single item to ensure it balances striking design with genuine, long-lasting durability.</p>
+  <div class="about-grid">
     <div class="about-stat"><div class="num">3</div><div class="lab">Core categories — cables, watches, decor</div></div>
     <div class="about-stat"><div class="num">1yr</div><div class="lab">Warranty on all electronics</div></div>
     <div class="about-stat"><div class="num">30d</div><div class="lab">Easy returns on decor</div></div>
@@ -489,11 +489,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
   /* ================= NAVIGATION / SPA ROUTING ================= */
-  /* Routing lives in the URL hash (#about, #contact, #returns, #checkout,
-     #product/slug) so a browser refresh lands back on the same page
-     instead of resetting to home. */
   const ALL_VIEWS = ['home','about','contact','returns','product','checkout'];
-  const NAV_HIGHLIGHT_MAP = { product:'home', checkout:'home' }; // which nav tab to light up for sub-pages
+  const NAV_HIGHLIGHT_MAP = { product:'home', checkout:'home' };
 
   function renderView(view){
     ALL_VIEWS.forEach(v=>{
@@ -510,7 +507,6 @@
   function navigate(view){
     const target = view === 'home' ? '' : view;
     if(window.location.hash.replace('#','') === target){
-      // hash isn't changing (already here) -> hashchange won't fire, so render directly
       if(view === 'checkout') renderCheckoutPage();
       renderView(view);
     } else {
@@ -565,18 +561,6 @@
     }, 2200);
   }
 
-  /* ================= LEAD CAPTURE (newsletter + contact form) =================
-     IMPORTANT, READ THIS: a static HTML page cannot auto-send a message to your
-     Instagram inbox. Real Instagram DMs require Meta's official Messaging API,
-     a verified business app, and a server component to call it — none of which
-     exist in a plain HTML file like this one. The practical, no-backend option
-     used below is a "mailto:" link: it opens the VISITOR's own email app with
-     a message already addressed to hello@moderncart.store, so it lands in your
-     real inbox with no setup required. If you want submissions to land silently
-     without opening the visitor's email app, swap the two functions below for
-     a form-backend service such as Formspree or Getform (they give you a POST
-     URL you can drop straight into the <form action="..."> tags above).
-     ================================================================ */
   function joinList(e){
     e.preventDefault();
     const email = e.target.querySelector('input[type=email]').value;
@@ -695,25 +679,9 @@
   }
   window.addEventListener('DOMContentLoaded', () => { updateCartUI(); });
 
-  /* ================= PRODUCT CATALOG =================
-     ------------------------------------------------------------------
-     HOW TO CHANGE PRODUCT IMAGES LATER (read this when you're ready):
-     Every product below renders as a procedurally generated 3D shape,
-     built by its `build(brassMat)` function using Three.js primitives —
-     there are no photo files involved yet.
-
-     To swap a product over to a REAL PHOTO instead of the 3D shape:
-       1. Put your image file next to this HTML file (or use a URL).
-       2. Add an `image: "your-file.jpg"` field to that product object,
-          right alongside `name`, `price`, etc. (see the commented
-          example on the very first product below).
-       3. That's it — `mountProductMedia()` further down already checks
-          for `p.image` and will show your photo instead of the 3D
-          shape automatically. You don't need to touch any other code.
-     ------------------------------------------------------------------ */
+  /* ================= PRODUCT CATALOG ================= */
   const ALL_PRODUCTS = [
     { featured:true, name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"₹14.99",
-      // image: "images/usb-c-cable.jpg",   <-- uncomment + point at a real photo to replace the 3D shape
       desc:"A 1.5m braided USB-C cable built for daily pocket-and-bag abuse, not just a desk drawer.",
       benefits:["1.5m braided nylon jacket","60W fast charging support","10,000+ bend life cycle"],
       build: brassMat => {
@@ -946,10 +914,7 @@
     return ALL_PRODUCTS.find(p=>slugify(p.name)===slug) || null;
   }
 
-  /* ================= SHARED 3D MOUNTING HELPER =================
-     Used by the Featured grid, the More-from-the-shop grid, AND the
-     product detail page, so the drag-to-rotate behaviour is identical
-     everywhere and only exists in one place in the code. */
+  /* ================= SHARED 3D MOUNTING HELPER ================= */
   function mountProductMedia(mediaWrap, p, opts){
     opts = opts || {};
     if(p.image){
@@ -973,16 +938,35 @@
     const group = p.build(brassMat);
     scene.add(group);
 
-    let targetRotY = 0.5, currentRotY = 0.5, autoRotate = true, dragging = false, lastX = 0;
-    function down(x){ dragging = true; autoRotate = false; lastX = x; }
-    function move(x){ if(!dragging) return; targetRotY += (x-lastX)*0.012; lastX = x; }
-    function up(){ dragging = false; }
+    let targetRotY = 0.5, currentRotY = 0.5, autoRotate = true, dragging = false, lastX = 0, hasMoved = false;
+    
+    function down(x){ 
+      dragging = true; 
+      autoRotate = false; 
+      lastX = x; 
+      hasMoved = false;
+    }
+    function move(x){ 
+      if(!dragging) return; 
+      if(Math.abs(x - lastX) > 3) hasMoved = true;
+      targetRotY += (x-lastX)*0.012; 
+      lastX = x; 
+    }
+    function up(e){ 
+      dragging = false; 
+    }
+
     canvas.addEventListener('mousedown', e=>down(e.clientX));
     window.addEventListener('mousemove', e=>move(e.clientX));
     window.addEventListener('mouseup', up);
-    canvas.addEventListener('touchstart', e=>down(e.touches[0].clientX), {passive:true});
-    canvas.addEventListener('touchmove', e=>move(e.touches[0].clientX), {passive:true});
-    canvas.addEventListener('touchend', up);
+
+    canvas.addEventListener('touchstart', e=>{
+      down(e.touches[0].clientX);
+    }, {passive:true});
+    canvas.addEventListener('touchmove', e=>{
+      move(e.touches[0].clientX);
+    }, {passive:true});
+    canvas.addEventListener('touchend', up, {passive:true});
 
     function resize(){
       const w = mediaWrap.clientWidth, h = mediaWrap.clientHeight;
@@ -990,8 +974,11 @@
       camera.aspect = w/h; camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
     }
-    new ResizeObserver(resize).observe(mediaWrap);
-    resize();
+    
+    // Use ResizeObserver and force immediate resize check for mobile rendering reliability
+    const observer = new ResizeObserver(resize);
+    observer.observe(mediaWrap);
+    setTimeout(resize, 50);
 
     const controller = {
       renderer,
@@ -1028,16 +1015,21 @@
     const mediaWrap = card.querySelector('.canvas-wrap');
     const controller = mountProductMedia(mediaWrap, p);
 
-    card.querySelector('.add').addEventListener('click', (e)=>{ e.stopPropagation(); addToCart(p.name, p.price, e); });
-    card.style.cursor = 'pointer';
+    card.querySelector('.add').addEventListener('click', (e)=>{ 
+      e.stopPropagation(); 
+      addToCart(p.name, p.price, e); 
+    });
+
+    // Make card fully clickable on both desktop and mobile touch devices
     card.addEventListener('click', (e)=>{
-      if(e.target.closest('.add') || e.target.closest('.canvas-wrap')) return;
+      if(e.target.closest('.add')) return;
       goToProduct(slugify(p.name));
     });
+
     return { el: card, controller };
   }
 
-  /* ---- Featured grid (always the same 4) ---- */
+  /* ---- Featured grid ---- */
   const grid = document.getElementById('featured-grid');
   const scenes = [];
   featured.forEach((p, idx)=>{
@@ -1046,7 +1038,7 @@
     if(controller) scenes.push(controller);
   });
 
-  /* ---- More-from-the-shop grid (filterable, rebuilt on chip clicks) ---- */
+  /* ---- More-from-the-shop grid ---- */
   let moreSceneControllers = [];
   const categories = [
     {id:'all', label:'All'}, {id:'cables', label:'Cables'}, {id:'watches', label:'Watches'}, {id:'decor', label:'Home decor'}
@@ -1068,7 +1060,6 @@
   }
   const flatGrid = document.getElementById('flat-grid');
   function renderFlatGrid(){
-    // Dispose old WebGL contexts before rebuilding so repeated filter clicks don't leak GPU memory
     moreSceneControllers.forEach(c=>{ if(c.renderer) c.renderer.dispose(); });
     moreSceneControllers = [];
     flatGrid.innerHTML = '';
@@ -1199,7 +1190,6 @@
     return false;
   }
 
-  /* Initial load: render whatever the URL hash points to (home/about/contact/returns/checkout/product/slug) */
   routeFromHash();
 </script>
 </body>

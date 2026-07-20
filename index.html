@@ -43,7 +43,7 @@
   .nav-links button{font-size:14px;color:var(--bone-dim);padding:4px 0;border-bottom:1px solid transparent;}
   .nav-links button:hover, .nav-links button.active{color:var(--brass);border-color:var(--brass);}
   .nav-actions{display:flex;align-items:center;gap:12px;}
-  .icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;flex-shrink:0;position:relative;color:var(--bone);}
+  .icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;flex-shrink:0;color:var(--bone);position:relative;}
   .icon-btn:hover{border-color:var(--brass);}
   .icon-btn svg{width:16px;height:16px;}
   .cart-badge{
@@ -94,7 +94,7 @@
   .p-index{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--brass);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
   .p-index .badge{background:rgba(245,241,232,0.08);color:var(--bone-dim);padding:4px 9px;border-radius:999px;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.5px;text-transform:uppercase;}
   .canvas-wrap{position:relative;width:100%;aspect-ratio:1/1;border-radius:10px;background:radial-gradient(circle at 30% 25%, #1c2129, #0a0d12);overflow:hidden;touch-action:pan-y;}
-  .canvas-wrap canvas{width:100%!important;height:100%!important;display:block;cursor:grab;}
+  .canvas-wrap canvas{width:100%!important;height:100%!important;display:block;cursor:grab;touch-action:none;}
   .canvas-wrap:active canvas{cursor:grabbing;}
   .drag-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-dim);opacity:.65;pointer-events:none;white-space:nowrap;}
   .p-card h3{font-size:15px;font-weight:500;margin:14px 0 4px;}
@@ -949,7 +949,20 @@
   /* ================= SHARED 3D MOUNTING HELPER =================
      Used by the Featured grid, the More-from-the-shop grid, AND the
      product detail page, so the drag-to-rotate behaviour is identical
-     everywhere and only exists in one place in the code. */
+     everywhere and only exists in one place in the code.
+
+     MOBILE FIX: creating a full Three.js WebGLRenderer for every single
+     product card at once (12 on this page) blew past the limited number
+     of simultaneous WebGL contexts most phones allow, which crashed the
+     tab to a blank white page. Grid cards now build their 3D scene lazily
+     via IntersectionObserver (only while scrolled into view) and dispose
+     their renderer when scrolled away, so only a couple of contexts are
+     ever alive at once. The product detail page still builds immediately
+     since it's the only 3D scene on that page. */
+  function isMobileDevice(){
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 900;
+  }
+
   function mountProductMedia(mediaWrap, p, opts){
     opts = opts || {};
     if(p.image){
@@ -959,57 +972,96 @@
     mediaWrap.innerHTML = `<canvas></canvas><div class="drag-hint">&#8596; drag to rotate</div>`;
     const canvas = mediaWrap.querySelector('canvas');
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-    camera.position.set(0, 0.4, 4.2);
-    const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    const key = new THREE.DirectionalLight(0xffffff, 1.3); key.position.set(3,4,4); scene.add(key);
-    const rim = new THREE.DirectionalLight(0xc89b3c, 1.0); rim.position.set(-4,1,-3); scene.add(rim);
-    scene.add(new THREE.AmbientLight(0x445566, 0.75));
-
-    const brassMat = new THREE.MeshStandardMaterial({color:0xc89b3c, metalness:0.7, roughness:0.3});
-    const group = p.build(brassMat);
-    scene.add(group);
-
+    let renderer=null, scene=null, camera=null, group=null;
     let targetRotY = 0.5, currentRotY = 0.5, autoRotate = true, dragging = false, lastX = 0;
-    function down(x){ dragging = true; autoRotate = false; lastX = x; }
-    function move(x){ if(!dragging) return; targetRotY += (x-lastX)*0.012; lastX = x; }
-    function up(){ dragging = false; }
-    canvas.addEventListener('mousedown', e=>down(e.clientX));
-    window.addEventListener('mousemove', e=>move(e.clientX));
-    window.addEventListener('mouseup', up);
-    canvas.addEventListener('touchstart', e=>down(e.touches[0].clientX), {passive:true});
-    canvas.addEventListener('touchmove', e=>move(e.touches[0].clientX), {passive:true});
-    canvas.addEventListener('touchend', up);
+    let resizeObs = null, io = null, rafId = null, built = false;
+
+    // Pointer handlers are attached once to the (persistent) canvas element,
+    // not re-attached on every build/dispose cycle, so scrolling a card in
+    // and out of view repeatedly can't pile up duplicate listeners.
+    function onPointerDown(e){
+      dragging = true; autoRotate = false; lastX = e.clientX;
+      if(canvas.setPointerCapture){ try{ canvas.setPointerCapture(e.pointerId); }catch(err){} }
+    }
+    function onPointerMove(e){ if(!dragging) return; targetRotY += (e.clientX - lastX) * 0.012; lastX = e.clientX; }
+    function onPointerUp(){ dragging = false; }
+    canvas.addEventListener('pointerdown', onPointerDown);
+    canvas.addEventListener('pointermove', onPointerMove);
+    canvas.addEventListener('pointerup', onPointerUp);
+    canvas.addEventListener('pointercancel', onPointerUp);
 
     function resize(){
+      if(!renderer) return;
       const w = mediaWrap.clientWidth, h = mediaWrap.clientHeight;
       if(w===0||h===0) return;
       camera.aspect = w/h; camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
     }
-    new ResizeObserver(resize).observe(mediaWrap);
-    resize();
+
+    function build(){
+      if(built) return;
+      try{
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+        camera.position.set(0, 0.4, 4.2);
+        renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, powerPreference:'low-power'});
+      }catch(err){
+        mediaWrap.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--bone-dim);font-size:11px;text-align:center;padding:10px;">3D preview unavailable on this device</div>';
+        return;
+      }
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobileDevice() ? 1.25 : 2));
+      canvas.addEventListener('webglcontextlost', (e)=>{ e.preventDefault(); dispose(); }, {once:true});
+
+      const key = new THREE.DirectionalLight(0xffffff, 1.3); key.position.set(3,4,4); scene.add(key);
+      const rim = new THREE.DirectionalLight(0xc89b3c, 1.0); rim.position.set(-4,1,-3); scene.add(rim);
+      scene.add(new THREE.AmbientLight(0x445566, 0.75));
+
+      const brassMat = new THREE.MeshStandardMaterial({color:0xc89b3c, metalness:0.7, roughness:0.3});
+      group = p.build(brassMat);
+      scene.add(group);
+
+      resizeObs = new ResizeObserver(resize);
+      resizeObs.observe(mediaWrap);
+      resize();
+      built = true;
+
+      if(opts.independent){
+        function loop(){ rafId = requestAnimationFrame(loop); tick(); }
+        loop();
+      }
+    }
+
+    function dispose(){
+      if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+      if(resizeObs){ resizeObs.disconnect(); resizeObs = null; }
+      if(renderer){ renderer.dispose(); renderer = null; }
+      scene = null; camera = null; group = null;
+      built = false;
+    }
+
+    function tick(){
+      if(!built || !renderer) return;
+      if(autoRotate) targetRotY += 0.004;
+      currentRotY += (targetRotY - currentRotY) * 0.08;
+      if(group) group.rotation.y = currentRotY;
+      renderer.render(scene, camera);
+    }
 
     const controller = {
-      renderer,
-      tick(){
-        if(autoRotate) targetRotY += 0.004;
-        currentRotY += (targetRotY - currentRotY) * 0.08;
-        group.rotation.y = currentRotY;
-        renderer.render(scene, camera);
-      }
+      tick,
+      dispose,
+      fullDispose(){ if(io){ io.disconnect(); io = null; } dispose(); }
     };
 
     if(opts.independent){
-      function loop(){
-        productAnimId = requestAnimationFrame(loop);
-        controller.tick();
-      }
-      loop();
-      productRenderer = renderer;
+      build();
+    } else {
+      io = new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting) build(); else dispose();
+        });
+      }, {rootMargin:'200px 0px'});
+      io.observe(mediaWrap);
     }
 
     return controller;
@@ -1068,8 +1120,9 @@
   }
   const flatGrid = document.getElementById('flat-grid');
   function renderFlatGrid(){
-    // Dispose old WebGL contexts before rebuilding so repeated filter clicks don't leak GPU memory
-    moreSceneControllers.forEach(c=>{ if(c.renderer) c.renderer.dispose(); });
+    // Fully tear down old scenes (renderer + IntersectionObserver) before rebuilding
+    // so repeated filter clicks can't leak GPU memory or observers.
+    moreSceneControllers.forEach(c=>{ if(c.fullDispose) c.fullDispose(); });
     moreSceneControllers = [];
     flatGrid.innerHTML = '';
     const list = activeFilter==='all' ? more : more.filter(p=>p.cat===activeFilter);
@@ -1093,11 +1146,12 @@
   animateAll();
 
   /* ================= PRODUCT DETAIL PAGE ================= */
-  let productAnimId = null;
-  let productRenderer = null;
+  let currentProductController = null;
   function stopProductScene(){
-    if(productAnimId){ cancelAnimationFrame(productAnimId); productAnimId = null; }
-    if(productRenderer){ productRenderer.dispose(); productRenderer = null; }
+    if(currentProductController){
+      currentProductController.dispose();
+      currentProductController = null;
+    }
   }
 
   function renderProductPage(slug){
@@ -1138,7 +1192,7 @@
     document.getElementById('pd-add').addEventListener('click', (e)=> addToCart(p.name, p.price, e));
 
     const mediaEl = document.getElementById('pd-media');
-    mountProductMedia(mediaEl, p, {independent:true});
+    currentProductController = mountProductMedia(mediaEl, p, {independent:true});
     renderView('product');
   }
 

@@ -89,11 +89,11 @@
 
   /* ---------- 3D PRODUCT CARDS ---------- */
   .product-grid{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:20px;padding:0 5vw 100px;}
-  .p-card{background:var(--ink-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;min-width:0;transition:border-color .3s ease;cursor:pointer;}
+  .p-card{background:var(--ink-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;min-width:0;transition:border-color .3s ease;}
   .p-card:hover{border-color:var(--brass-dim);}
   .p-index{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--brass);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
   .p-index .badge{background:rgba(245,241,232,0.08);color:var(--bone-dim);padding:4px 9px;border-radius:999px;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.5px;text-transform:uppercase;}
-  .canvas-wrap{position:relative;width:100%;aspect-ratio:1/1;min-height:180px;border-radius:10px;background:radial-gradient(circle at 30% 25%, #1c2129, #0a0d12);overflow:hidden;touch-action:pan-y;}
+  .canvas-wrap{position:relative;width:100%;aspect-ratio:1/1;border-radius:10px;background:radial-gradient(circle at 30% 25%, #1c2129, #0a0d12);overflow:hidden;touch-action:pan-y;}
   .canvas-wrap canvas{width:100%!important;height:100%!important;display:block;cursor:grab;}
   .canvas-wrap:active canvas{cursor:grabbing;}
   .drag-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-dim);opacity:.65;pointer-events:none;white-space:nowrap;}
@@ -375,7 +375,6 @@
   <h1>An intentional store, run properly.</h1>
   <h2 style="font-size: 20px; font-weight: 500; margin-top: 30px; margin-bottom: 12px; color: var(--bone);">Our Story</h2>
   <p><span style="color: var(--brass); font-weight: 600;">ModernCart</span> started with a simple, everyday frustration: ordering products online often feels like a gamble. Most items look flawless in edited photos, but look completely different when they finally show up at your front door. We believe shopping online should be completely transparent. So, we built a digital storefront where you don't have to guess. By integrating interactive 3D modeling directly into our collections, you can completely rotate, inspect, and evaluate every trending piece from every angle before you buy it. No surprises, no guesswork—just exactly what you expected.</p>
-  
   <p>The store is personally run by Vishal Kashyap out of Delhi. Instead of trying to sell thousands of generic items averagely, <span style="color: var(--brass); font-weight: 600;">ModernCart</span> focuses entirely on sourcing a highly curated selection of products done exceptionally well. We track what's relevant right now, thoroughly testing every single item to ensure it balances striking design with genuine, long-lasting durability.</p>
   <div class="about-grid">
     <div class="about-stat"><div class="num">3</div><div class="lab">Core categories — cables, watches, decor</div></div>
@@ -561,6 +560,7 @@
     }, 2200);
   }
 
+  /* ================= LEAD CAPTURE ================= */
   function joinList(e){
     e.preventDefault();
     const email = e.target.querySelector('input[type=email]').value;
@@ -914,7 +914,7 @@
     return ALL_PRODUCTS.find(p=>slugify(p.name)===slug) || null;
   }
 
-  /* ================= SHARED 3D MOUNTING HELPER ================= */
+  /* ================= 3D MOUNTING HELPER ================= */
   function mountProductMedia(mediaWrap, p, opts){
     opts = opts || {};
     if(p.image){
@@ -938,35 +938,17 @@
     const group = p.build(brassMat);
     scene.add(group);
 
-    let targetRotY = 0.5, currentRotY = 0.5, autoRotate = true, dragging = false, lastX = 0, hasMoved = false;
+    let targetRotY = 0.5, currentRotY = 0.5, autoRotate = true, dragging = false, lastX = 0;
+    function down(x){ dragging = true; autoRotate = false; lastX = x; }
+    function move(x){ if(!dragging) return; targetRotY += (x-lastX)*0.012; lastX = x; }
+    function up(){ dragging = false; }
     
-    function down(x){ 
-      dragging = true; 
-      autoRotate = false; 
-      lastX = x; 
-      hasMoved = false;
-    }
-    function move(x){ 
-      if(!dragging) return; 
-      if(Math.abs(x - lastX) > 3) hasMoved = true;
-      targetRotY += (x-lastX)*0.012; 
-      lastX = x; 
-    }
-    function up(e){ 
-      dragging = false; 
-    }
-
     canvas.addEventListener('mousedown', e=>down(e.clientX));
     window.addEventListener('mousemove', e=>move(e.clientX));
     window.addEventListener('mouseup', up);
-
-    canvas.addEventListener('touchstart', e=>{
-      down(e.touches[0].clientX);
-    }, {passive:true});
-    canvas.addEventListener('touchmove', e=>{
-      move(e.touches[0].clientX);
-    }, {passive:true});
-    canvas.addEventListener('touchend', up, {passive:true});
+    canvas.addEventListener('touchstart', e=>down(e.touches[0].clientX), {passive:true});
+    window.addEventListener('touchmove', e=>move(e.touches[0].clientX), {passive:true});
+    window.addEventListener('touchend', up);
 
     function resize(){
       const w = mediaWrap.clientWidth, h = mediaWrap.clientHeight;
@@ -974,11 +956,8 @@
       camera.aspect = w/h; camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
     }
-    
-    // Use ResizeObserver and force immediate resize check for mobile rendering reliability
-    const observer = new ResizeObserver(resize);
-    observer.observe(mediaWrap);
-    setTimeout(resize, 50);
+    new ResizeObserver(resize).observe(mediaWrap);
+    resize();
 
     const controller = {
       renderer,
@@ -1015,21 +994,15 @@
     const mediaWrap = card.querySelector('.canvas-wrap');
     const controller = mountProductMedia(mediaWrap, p);
 
-    card.querySelector('.add').addEventListener('click', (e)=>{ 
-      e.stopPropagation(); 
-      addToCart(p.name, p.price, e); 
-    });
-
-    // Make card fully clickable on both desktop and mobile touch devices
+    card.querySelector('.add').addEventListener('click', (e)=>{ e.stopPropagation(); addToCart(p.name, p.price, e); });
+    card.style.cursor = 'pointer';
     card.addEventListener('click', (e)=>{
-      if(e.target.closest('.add')) return;
+      if(e.target.closest('.add') || e.target.closest('.canvas-wrap')) return;
       goToProduct(slugify(p.name));
     });
-
     return { el: card, controller };
   }
 
-  /* ---- Featured grid ---- */
   const grid = document.getElementById('featured-grid');
   const scenes = [];
   featured.forEach((p, idx)=>{
@@ -1038,7 +1011,6 @@
     if(controller) scenes.push(controller);
   });
 
-  /* ---- More-from-the-shop grid ---- */
   let moreSceneControllers = [];
   const categories = [
     {id:'all', label:'All'}, {id:'cables', label:'Cables'}, {id:'watches', label:'Watches'}, {id:'decor', label:'Home decor'}
@@ -1170,7 +1142,7 @@
             <label><input type="radio" name="pay" value="card"> Card (demo)</label>
           </div>
           <button type="submit" class="btn-primary" style="justify-content:center;margin-top:8px;">Place order</button>
-          <p style="font-size:12px;color:var(--bone-dim);margin:6px 0 0;">This is a UI demo — no real payment is processed. Taking real payments needs a payment gateway (e.g. Razorpay) plus a backend server.</p>
+          <p style="font-size:12px;color:var(--bone-dim);margin:6px 0 0;">This is a UI demo — no real payment is processed.</p>
         </form>
       </div>
     `;
@@ -1184,13 +1156,13 @@
     document.getElementById('checkout-content').innerHTML = `
       <div class="eyebrow">Order placed</div>
       <h1 style="font-size:28px;">Thanks — order ${orderId} is confirmed</h1>
-      <p>This is a demo confirmation screen. Connect a real payment gateway and backend to accept live orders and actually fulfil them.</p>
+      <p>This is a demo confirmation screen.</p>
       <button class="btn-primary" onclick="navigate('home')">Back to shop</button>
     `;
     return false;
   }
 
   routeFromHash();
-  </script>
+</script>
 </body>
 </html>

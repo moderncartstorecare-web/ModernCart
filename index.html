@@ -188,6 +188,22 @@
   .pd-tab-panel td:last-child{color:var(--bone);}
   .pd-rating{display:flex;align-items:center;gap:8px;margin:6px 0 14px;font-size:13px;color:var(--bone-dim);}
   .pd-rating .stars{color:var(--brass);font-size:14px;letter-spacing:1px;}
+  .star-picker{display:flex;gap:4px;font-size:24px;color:var(--border);}
+  .star-picker span{cursor:pointer;transition:color .15s;}
+  .star-picker span.active{color:var(--brass);}
+  .review-form{display:flex;flex-direction:column;gap:10px;max-width:420px;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+  .review-form input, .review-form textarea{
+    background:var(--ink-2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--bone);
+    font-family:'Inter',sans-serif;font-size:14px;resize:vertical;
+  }
+  .review-form input:focus, .review-form textarea:focus{outline:none;border-color:var(--brass);}
+  .review-item{padding:14px 0;border-bottom:1px solid var(--border);}
+  .review-item .r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .review-item .r-stars{color:var(--brass);font-size:13px;letter-spacing:1px;}
+  .review-item .r-name{font-size:13px;color:var(--bone);font-weight:500;}
+  .review-item .r-date{font-size:11px;color:var(--bone-dim);}
+  .review-item .r-comment{font-size:13px;color:var(--bone-dim);line-height:1.6;}
+  .review-note{font-size:11px;color:var(--bone-dim);margin-top:4px;}
   @media (max-width:700px){ .contact-grid{grid-template-columns:1fr;} .about-grid{grid-template-columns:1fr;} .product-detail-grid{grid-template-columns:1fr;} }
 
   /* ---------- FOOTER ---------- */
@@ -1036,6 +1052,112 @@
     return '★'.repeat(full) + '☆'.repeat(5-full);
   }
 
+  /* ================= CUSTOMER RATINGS / REVIEWS =================
+     IMPORTANT — READ THIS: this HTML file has no backend server, so
+     submitted reviews are saved in the VISITOR'S OWN BROWSER via
+     localStorage, not to a shared database. That means a review someone
+     leaves shows up for every other tab/visit in *that same browser*
+     (so you'll see your own test reviews reliably), but a review left by
+     a customer on their phone will NOT automatically appear to a
+     different customer browsing on their own phone or laptop — there's
+     no server in between to sync them.
+     To get reviews that genuinely show to every visitor, you'd need a
+     small backend or a service like Firebase/Supabase to store them
+     centrally — happy to wire that up if/when you're ready to host this
+     on a real domain. */
+  function getStoredReviews(slug){
+    try{
+      const all = JSON.parse(localStorage.getItem('modernCartReviews') || '{}');
+      return all[slug] || [];
+    }catch(err){ return []; }
+  }
+  function saveReview(slug, review){
+    const all = JSON.parse(localStorage.getItem('modernCartReviews') || '{}');
+    if(!all[slug]) all[slug] = [];
+    all[slug].unshift(review);
+    localStorage.setItem('modernCartReviews', JSON.stringify(all));
+  }
+  function combinedRating(p){
+    const stored = getStoredReviews(slugify(p.name));
+    const seedCount = p.ratingCount || 0;
+    const seedSum = (p.rating || 0) * seedCount;
+    const storedSum = stored.reduce((s,r)=>s+r.stars, 0);
+    const totalCount = seedCount + stored.length;
+    const avg = totalCount > 0 ? (seedSum + storedSum) / totalCount : 0;
+    return { avg, count: totalCount };
+  }
+  function renderRatingLine(p){
+    const el = document.getElementById('pd-rating-line');
+    if(!el) return;
+    const { avg, count } = combinedRating(p);
+    el.innerHTML = count > 0
+      ? `<span class="stars">${starString(avg)}</span><span>${avg.toFixed(1)} · ${count} ratings</span>`
+      : `<span style="color:var(--bone-dim);">No ratings yet — be the first</span>`;
+  }
+  function renderReviewsPanel(p){
+    const panel = document.getElementById('pd-reviews-panel');
+    if(!panel) return;
+    const slug = slugify(p.name);
+    const stored = getStoredReviews(slug);
+    panel.innerHTML = `
+      <div class="review-form">
+        <div style="font-size:14px;">Rate this product</div>
+        <div class="star-picker" id="reviewStarPicker">
+          ${[1,2,3,4,5].map(n=>`<span data-val="${n}">★</span>`).join('')}
+        </div>
+        <input type="text" id="reviewName" placeholder="Your name">
+        <textarea id="reviewComment" rows="3" placeholder="Share your experience (optional)"></textarea>
+        <button type="button" class="btn-primary" style="justify-content:center;" onclick="submitReview('${slug}')">Submit rating</button>
+        <div class="review-note">Saved to this browser. See the note above for how reviews sync across visitors.</div>
+      </div>
+      <div id="reviewList">
+        ${stored.length === 0
+          ? '<p style="color:var(--bone-dim);font-size:14px;">No written reviews yet.</p>'
+          : stored.map(r=>`
+              <div class="review-item">
+                <div class="r-head">
+                  <span class="r-name">${r.name || 'Anonymous'}</span>
+                  <span class="r-date">${r.date}</span>
+                </div>
+                <div class="r-stars">${starString(r.stars)}</div>
+                ${r.comment ? `<div class="r-comment">${r.comment}</div>` : ''}
+              </div>
+            `).join('')
+        }
+      </div>
+    `;
+    let picked = 0;
+    const stars = panel.querySelectorAll('#reviewStarPicker span');
+    stars.forEach(s=>{
+      s.addEventListener('click', ()=>{
+        picked = parseInt(s.dataset.val, 10);
+        stars.forEach(st=> st.classList.toggle('active', parseInt(st.dataset.val,10) <= picked));
+      });
+    });
+    panel.dataset.picked = '0';
+    panel._getPicked = () => picked;
+  }
+  window._pendingReviewStars = 0;
+  function submitReview(slug){
+    const panel = document.getElementById('pd-reviews-panel');
+    const stars = panel.querySelectorAll('#reviewStarPicker span.active').length;
+    if(stars === 0){ showToast('Pick a star rating first'); return; }
+    const name = document.getElementById('reviewName').value.trim();
+    const comment = document.getElementById('reviewComment').value.trim();
+    const review = {
+      stars,
+      name: name || 'Anonymous',
+      comment,
+      date: new Date().toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'})
+    };
+    saveReview(slug, review);
+    showToast('Thanks for rating this product');
+    const p = findProduct(slug);
+    renderRatingLine(p);
+    renderReviewsPanel(p);
+    setPdTab('reviews');
+  }
+
   /* ================= SHARED 3D MOUNTING HELPER (mobile-safe, lazy) ================= */
   function isMobileDevice(){
     return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 900;
@@ -1275,21 +1397,22 @@
         <div class="canvas-wrap" id="pd-media" style="max-width:420px;"></div>
         <div class="product-detail-info">
           <h1 style="margin-bottom:2px;">${p.name}</h1>
-          ${p.rating ? `<div class="pd-rating"><span class="stars">${starString(p.rating)}</span><span>${p.rating.toFixed(1)} · ${p.ratingCount} ratings</span></div>` : ''}
+          <div class="pd-rating" id="pd-rating-line"></div>
           <div class="p-price" style="font-size:20px;margin:6px 0 16px;">${p.price}</div>
+          <div class="hero-cta" style="margin-bottom:20px;">
+            <button class="btn-primary" id="pd-add">Add to cart</button>
+          </div>
           <p>${p.desc || ''}</p>
           <ul class="benefits-list">
             ${(p.benefits||[]).map(b=>`<li>${b}</li>`).join('')}
           </ul>
-          <button class="btn-ghost" onclick="navigate('returns')" style="margin-bottom:18px;">Read our return policy</button>
-          <div class="hero-cta">
-            <button class="btn-primary" id="pd-add">Add to cart</button>
-          </div>
+          <button class="btn-ghost" onclick="navigate('returns')">Read our return policy</button>
         </div>
       </div>
       <div class="pd-tabs">
         <button class="pd-tab active" data-tab="specs" onclick="setPdTab('specs')">Specifications</button>
         <button class="pd-tab" data-tab="shipping" onclick="setPdTab('shipping')">Shipping &amp; returns</button>
+        <button class="pd-tab" data-tab="reviews" onclick="setPdTab('reviews')">Reviews</button>
       </div>
       <div class="pd-tab-panel" data-panel="specs">
         <table>${specsRows}</table>
@@ -1298,8 +1421,11 @@
         <p style="margin-bottom:10px;">Free shipping on orders over ₹499. Standard delivery in 3–6 business days depending on your location.</p>
         <p>Not right for you? See our <button class="btn-ghost" style="padding:4px 10px;display:inline-flex;" onclick="navigate('returns')">return policy</button> for the exact window on this category.</p>
       </div>
+      <div class="pd-tab-panel" data-panel="reviews" hidden id="pd-reviews-panel"></div>
     `;
     document.getElementById('pd-add').addEventListener('click', (e)=> addToCart(p.name, p.price, e));
+    renderRatingLine(p);
+    renderReviewsPanel(p);
 
     const mediaEl = document.getElementById('pd-media');
     currentProductController = mountProductMedia(mediaEl, p, {independent:true});

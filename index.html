@@ -21,7 +21,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
-  body{background:var(--ink);color:var(--bone);font-family:'Inter',sans-serif;overflow-x:hidden;width:100%;touch-action:manipulation;}
+  body{background:var(--ink);color:var(--bone);font-family:'Inter',sans-serif;overflow-x:hidden;width:100%;touch-action:pan-y;}
   img,canvas{max-width:100%;}
   h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
@@ -579,19 +579,31 @@
   const STORE_UPI_ID = 'vishalkashyap7424@ptaxis';
   const PREPAID_DISCOUNT_PERCENT = 5;
 
-  /* ================= PREVENT PINCH / DOUBLE-TAP ZOOM ================= */
+  /* ================= PREVENT ZOOM — MOBILE (pinch + double-tap) ================= */
   document.addEventListener('gesturestart', e => e.preventDefault());
   document.addEventListener('gesturechange', e => e.preventDefault());
   document.addEventListener('gestureend', e => e.preventDefault());
   document.addEventListener('touchmove', e => {
-    if(e.touches.length > 1) e.preventDefault();
+    if(e.touches.length > 1) e.preventDefault(); // blocks two-finger pinch
   }, { passive: false });
   let lastTouchEnd = 0;
   document.addEventListener('touchend', e => {
     const now = Date.now();
-    if(now - lastTouchEnd <= 300) e.preventDefault();
+    if(now - lastTouchEnd <= 300) e.preventDefault(); // blocks double-tap zoom
     lastTouchEnd = now;
   }, false);
+
+  /* ================= PREVENT ZOOM — DESKTOP (ctrl+wheel, ctrl +/-/0) =================
+     Browsers zoom the whole page on Ctrl+scroll or Ctrl/Cmd + "+"/"-"/"0" —
+     neither of those is stopped by the viewport meta tag or the mobile
+     handlers above, so they need their own listeners. */
+  document.addEventListener('wheel', e => {
+    if(e.ctrlKey) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('keydown', e => {
+    const zoomKeys = ['=', '+', '-', '_', '0'];
+    if((e.ctrlKey || e.metaKey) && zoomKeys.includes(e.key)) e.preventDefault();
+  });
 
   /* ================= NAVIGATION / SPA ROUTING ================= */
   const ALL_VIEWS = ['home','about','contact','returns','product','checkout'];
@@ -793,7 +805,6 @@
     { featured:true, name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"₹179",
       desc:"A 1.5m braided USB-C cable built for daily pocket-and-bag abuse, not just a desk drawer. The double-braided nylon jacket resists fraying at the connector — the single most common failure point on cheaper cables — while the reinforced aluminium heads are rated for over ten thousand bend cycles. Supports up to 60W fast charging, so it works equally well for phones, tablets, and most USB-C laptops.",
       benefits:["1.5m braided nylon jacket, tangle resistant","60W fast charging support","10,000+ bend life cycle","Reinforced aluminium connector heads","Compatible with all standard USB-C devices"],
-      rating:4.4, ratingCount:212,
       specs:{ "Length":"1.5 metres", "Connector":"USB-C to USB-C", "Max output":"60W / 3A", "Material":"Braided nylon + aluminium", "In the box":"1x cable", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -814,7 +825,6 @@
     { featured:true, name:"Smartwatch Pro", cat:"watches", catLabel:"Smartwatches", price:"₹899",
       desc:"An everyday smartwatch built around a battery that actually lasts the week, not just the spec sheet. The always-on AMOLED display stays readable in direct sunlight, and 5ATM water resistance means it survives handwashing, rain, and the occasional pool dip without a second thought. Tracks steps, sleep, and heart rate in the background and syncs quietly to your phone.",
       benefits:["7-day battery life on a single charge","Always-on AMOLED display, sunlight readable","5ATM water resistance","Continuous heart rate + sleep tracking","Syncs with iOS and Android"],
-      rating:4.2, ratingCount:158,
       specs:{ "Display":"1.4\" AMOLED, always-on", "Battery":"Up to 7 days", "Water resistance":"5ATM", "Compatibility":"Android 8+ / iOS 12+", "Strap":"Silicone, swappable", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -836,7 +846,6 @@
     { featured:true, name:"Ceramic Table Vase", cat:"decor", catLabel:"Home decor", price:"₹599",
       desc:"A hand-glazed ceramic vase sized for a single stem or a small everyday bunch — the kind of piece that looks intentional on a shelf even when it's empty. The narrow neck holds stems upright without extra support, and the food-safe glaze means fresh flowers and water are no issue.",
       benefits:["Hand-glazed ceramic, no two pieces identical","Food-safe interior glaze","Fits fresh or dried stems","Weighted base resists tipping"],
-      rating:4.6, ratingCount:94,
       specs:{ "Material":"Glazed ceramic", "Height":"18 cm", "Diameter":"9 cm at base", "Care":"Hand wash only", "Warranty":"30-day return" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -856,7 +865,6 @@
     { featured:true, name:"Wooden Wall Clock", cat:"decor", catLabel:"Home decor", price:"₹899",
       desc:"A solid oak wall clock with a silent sweep movement — no audible ticking to notice at 2am. The 30cm face is large enough to read from across a room, and the oak grain is left visible under a light matte finish rather than painted over.",
       benefits:["Solid oak face with visible grain","Silent sweep movement, zero ticking noise","30cm diameter, readable from a distance","Runs on 1x AA battery (not included)"],
-      rating:4.5, ratingCount:76,
       specs:{ "Material":"Solid oak", "Diameter":"30 cm", "Movement":"Silent sweep quartz", "Power":"1x AA battery", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -878,7 +886,6 @@
     { featured:false, name:"Fast Charge Cable 3-Pack", cat:"cables", catLabel:"Charging cables · Nylon", price:"₹449",
       desc:"Three lengths in one pack — a short 0.3m for your desk, a 1m for the couch, and a 2m travel length for your bag — so you're never hunting for the right cable. All three support 65W PD fast charging and share the same reinforced aluminium connector build as our single cables.",
       benefits:["3 cables per pack: 0.3m / 1m / 2m","65W PD support on all three","Reinforced aluminium connectors","Includes a cable tie for storage"],
-      rating:4.3, ratingCount:141,
       specs:{ "Pack contents":"0.3m + 1m + 2m cables", "Max output":"65W PD", "Connector":"USB-C to USB-C", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -900,7 +907,6 @@
     { featured:false, name:"USB-C to Lightning Cable", cat:"cables", catLabel:"Charging cables · 6ft", price:"₹249",
       desc:"A 6ft cable that bridges a USB-C charger with a Lightning-style device, so one charger covers everything on your desk. The extra length means you can keep using your phone comfortably while it charges across a room or from a wall outlet.",
       benefits:["MFi-style compatible connector","6ft (1.8m) length","20W fast charge support","Reinforced strain-relief at both ends"],
-      rating:4.1, ratingCount:88,
       specs:{ "Length":"6 ft (1.8 m)", "Connector":"USB-C to Lightning-style", "Max output":"20W", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -921,7 +927,6 @@
     { featured:false, name:"Magnetic Charging Cable", cat:"cables", catLabel:"Charging cables · Steel tip", price:"₹299",
       desc:"Snap it on instead of fumbling for the port in the dark — the magnetic tip lines itself up automatically, and the connector rotates 540° so the cable never fights the angle you're holding your phone at.",
       benefits:["Snap-on magnetic tip","540° rotating connector, no wrong angle","Reversible — physically can't plug in wrong","18W fast charge support"],
-      rating:4.0, ratingCount:65,
       specs:{ "Length":"1 metre", "Connector":"Magnetic USB-C", "Max output":"18W", "Warranty":"6 months" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -940,7 +945,6 @@
     { featured:false, name:"Smartwatch Lite", cat:"watches", catLabel:"Smartwatches · Silicone band", price:"₹649",
       desc:"A lighter, simpler smartwatch for everyday wear — sleep and heart-rate tracking without the bulk or the price of the Pro model. The soft silicone band stays comfortable through a full day, gym session included.",
       benefits:["Lightweight silicone band","10-day battery life","Sleep + heart rate tracking","Notification mirroring from your phone"],
-      rating:4.0, ratingCount:112,
       specs:{ "Display":"1.1\" colour LCD", "Battery":"Up to 10 days", "Water resistance":"IP68", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -960,7 +964,6 @@
     { featured:false, name:"Smartwatch Sport", cat:"watches", catLabel:"Smartwatches · GPS", price:"₹1,199",
       desc:"Built-in GPS means you don't need your phone along for a run or a ride, and the MIL-STD-tested bezel is rated for drops, dust, and temperature swings — this is the one built to survive an actual workout, not just a walk to the kitchen.",
       benefits:["Built-in GPS, no phone required","Rugged bezel, MIL-STD-810G tested","50 sport modes","5ATM water resistance"],
-      rating:4.3, ratingCount:97,
       specs:{ "Display":"1.3\" AMOLED", "Battery":"Up to 5 days (GPS on: 20 hrs)", "Water resistance":"5ATM", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -982,7 +985,6 @@
     { featured:false, name:"Watch Charging Dock", cat:"watches", catLabel:"Smartwatches · Accessory", price:"₹349",
       desc:"A weighted charging puck that keeps your smartwatch upright and charging on your nightstand instead of sliding off a flat charging pad. The non-slip base keeps it planted even if you bump the desk.",
       benefits:["Magnetic fast-charge puck","Non-slip weighted base","1.2m braided cable included","Compact enough for travel"],
-      rating:4.2, ratingCount:53,
       specs:{ "Cable length":"1.2 metres", "Compatibility":"ModernCart Smartwatch Pro / Lite / Sport", "Warranty":"6 months" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -999,7 +1001,6 @@
     { featured:false, name:"Incense Holder Set", cat:"decor", catLabel:"Home decor · Ceramic", price:"₹349",
       desc:"A solid sheesham wood holder that catches falling ash cleanly instead of leaving a mess on the shelf below. Three slots let you burn multiple sticks at once, or keep spares ready to go.",
       benefits:["Solid sheesham wood, not painted MDF","Catches ash cleanly in a built-in tray","Fits standard incense sticks","3 slots for multiple sticks"],
-      rating:4.4, ratingCount:61,
       specs:{ "Material":"Solid sheesham wood", "Length":"18 cm", "Slots":"3", "Warranty":"30-day return" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -1020,7 +1021,6 @@
     { featured:false, name:"Warm Oak Table Lamp", cat:"decor", catLabel:"Home decor · Lighting", price:"₹1,299",
       desc:"A dimmable warm-white lamp on a solid oak base, with a linen shade that softens the light instead of throwing a harsh cone across the room. Good for a bedside table or a reading corner where you want warmth, not brightness.",
       benefits:["Dimmable warm-white LED, 3 brightness levels","Solid oak base, won't tip easily","Linen shade diffuses light softly","Standard plug, no special wiring needed"],
-      rating:4.5, ratingCount:39,
       specs:{ "Material":"Oak base + linen shade", "Height":"38 cm", "Bulb":"LED, included", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
@@ -1065,6 +1065,12 @@
      small backend or a service like Firebase/Supabase to store them
      centrally — happy to wire that up if/when you're ready to host this
      on a real domain. */
+  /* One-time cleanup: wipe any reviews saved locally during earlier testing
+     of this site, so ratings start fresh from only newly written reviews. */
+  if(!localStorage.getItem('modernCartReviewsResetV2')){
+    localStorage.removeItem('modernCartReviews');
+    localStorage.setItem('modernCartReviewsResetV2', '1');
+  }
   function getStoredReviews(slug){
     try{
       const all = JSON.parse(localStorage.getItem('modernCartReviews') || '{}');
@@ -1078,13 +1084,11 @@
     localStorage.setItem('modernCartReviews', JSON.stringify(all));
   }
   function combinedRating(p){
+    // Only real, visitor-submitted reviews count now — no built-in seed numbers.
     const stored = getStoredReviews(slugify(p.name));
-    const seedCount = p.ratingCount || 0;
-    const seedSum = (p.rating || 0) * seedCount;
-    const storedSum = stored.reduce((s,r)=>s+r.stars, 0);
-    const totalCount = seedCount + stored.length;
-    const avg = totalCount > 0 ? (seedSum + storedSum) / totalCount : 0;
-    return { avg, count: totalCount };
+    if(stored.length === 0) return { avg: 0, count: 0 };
+    const sum = stored.reduce((s,r)=>s+r.stars, 0);
+    return { avg: sum / stored.length, count: stored.length };
   }
   function renderRatingLine(p){
     const el = document.getElementById('pd-rating-line');

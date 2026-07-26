@@ -178,6 +178,16 @@
   .benefits-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin:18px 0;padding:0;}
   .benefits-list li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--bone-dim);}
   .benefits-list li::before{content:'✓';color:var(--brass);font-weight:700;flex-shrink:0;}
+  .pd-tabs{display:flex;gap:6px;border-bottom:1px solid var(--border);margin-top:36px;}
+  .pd-tab{padding:12px 18px;font-size:13px;color:var(--bone-dim);border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .pd-tab.active{color:var(--brass);border-color:var(--brass);}
+  .pd-tab-panel{padding:22px 0;font-size:14px;color:var(--bone-dim);line-height:1.7;}
+  .pd-tab-panel table{width:100%;border-collapse:collapse;}
+  .pd-tab-panel td{padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .pd-tab-panel td:first-child{color:var(--bone-dim);width:40%;}
+  .pd-tab-panel td:last-child{color:var(--bone);}
+  .pd-rating{display:flex;align-items:center;gap:8px;margin:6px 0 14px;font-size:13px;color:var(--bone-dim);}
+  .pd-rating .stars{color:var(--brass);font-size:14px;letter-spacing:1px;}
   @media (max-width:700px){ .contact-grid{grid-template-columns:1fr;} .about-grid{grid-template-columns:1fr;} .product-detail-grid{grid-template-columns:1fr;} }
 
   /* ---------- FOOTER ---------- */
@@ -230,6 +240,45 @@
     white-space:nowrap;
   }
   .toast.show{opacity:1;transform:translateY(0);}
+
+  /* ---------- CHECKOUT: PAYMENT OPTIONS ---------- */
+  .pay-options{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+  .pay-option{
+    border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;
+    transition:border-color .2s;
+  }
+  .pay-option.selected{border-color:var(--brass);}
+  .pay-option .po-head{display:flex;align-items:center;gap:10px;font-size:14px;}
+  .pay-option .po-badge{
+    font-size:10px;background:rgba(107,143,113,0.18);color:var(--sage);padding:3px 8px;border-radius:999px;
+    text-transform:uppercase;letter-spacing:0.5px;
+  }
+  .prepaid-details{
+    margin-top:14px;padding-top:14px;border-top:1px dashed var(--border);font-size:13px;color:var(--bone-dim);
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .upi-box{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--ink);
+    border:1px solid var(--border);border-radius:10px;padding:10px 14px;
+  }
+  .upi-box .mono{color:var(--brass);font-size:13px;}
+  .copy-btn{font-size:12px;color:var(--bone-dim);border:1px solid var(--border);padding:6px 10px;border-radius:8px;}
+  .copy-btn:hover{color:var(--brass);border-color:var(--brass);}
+  .price-cut{color:var(--bone-dim);text-decoration:line-through;font-size:13px;margin-right:8px;}
+
+  /* ---------- SUCCESS MODAL ---------- */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:600;display:none;align-items:center;justify-content:center;padding:24px;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--ink-2);border:1px solid var(--border);border-radius:18px;padding:36px 30px;max-width:380px;
+    text-align:center;
+  }
+  .modal-check{
+    width:56px;height:56px;border-radius:50%;background:var(--sage);color:var(--ink);font-size:26px;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 18px;
+  }
+  .modal-box h3{font-size:19px;margin-bottom:10px;}
+  .modal-box p{color:var(--bone-dim);font-size:14px;line-height:1.6;margin-bottom:20px;}
 
   /* ---------- RESPONSIVE ---------- */
   @media (max-width:1100px){
@@ -294,6 +343,16 @@
 </div>
 
 <div id="toast-container"></div>
+
+<!-- ============ SUCCESS MODAL ============ -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal-box">
+    <div class="modal-check">&#10003;</div>
+    <h3>Order placed successfully!</h3>
+    <p id="modalMsg">Your order has been sent to our team. Our store team will connect with you on WhatsApp shortly to confirm delivery.</p>
+    <button class="btn-primary" style="width:100%;justify-content:center;" id="modalContinueBtn">Continue to WhatsApp</button>
+  </div>
+</div>
 
 <!-- ============ HOME VIEW ============ -->
 <main id="view-home">
@@ -403,6 +462,10 @@
         <div><div class="t">Email</div><a class="v" href="mailto:moderncartstore.care@gmail.com">moderncartstore.care@gmail.com</a></div>
       </div>
       <div class="contact-row">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.5 3.5a11 11 0 0 0-16 15L3 21l2.6-1.5a11 11 0 0 0 14.9-16z"/></svg></div>
+        <div><div class="t">WhatsApp</div><a class="v" href="https://wa.link/06kkj8" target="_blank" rel="noopener">+91 87502 66249</a></div>
+      </div>
+      <div class="contact-row">
         <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg></div>
         <div><div class="t">Instagram</div><a class="v" href="https://www.instagram.com/moderncart.store/" target="_blank" rel="noopener">@moderncart.store</a></div>
       </div>
@@ -426,7 +489,7 @@
     <div class="about-stat"><div class="num">1yr</div><div class="lab">Warranty on manufacturing defects</div></div>
   </div>
   <h2 style="font-size:20px;font-weight:500;margin-top:36px;margin-bottom:12px;color:var(--bone);">How it works</h2>
-  <p>Email moderncartstore.care@gmail.com with your order details and the reason for the return. Once it's approved, pack the item back in its original packaging — we'll arrange a pickup where available, or share a drop-off address.</p>
+  <p>Message us on WhatsApp (+91 87502 66249) or email moderncartstore.care@gmail.com with your order details and the reason for the return. Once it's approved, pack the item back in its original packaging — we'll arrange a pickup where available, or share a drop-off address.</p>
   <p>Refunds go back to the original payment method within 5–7 business days of the item passing a quick quality check. Anything that arrives damaged or faulty is replaced at no extra cost.</p>
   <h2 style="font-size:20px;font-weight:500;margin-top:28px;margin-bottom:12px;color:var(--bone);">What isn't covered</h2>
   <p>Used incense, opened cable multi-packs missing pieces, and normal wear from daily use aren't eligible for return — everything else, we've got you covered.</p>
@@ -454,6 +517,9 @@
         <a class="icon-btn" href="https://www.instagram.com/moderncart.store/" target="_blank" rel="noopener" aria-label="Instagram">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg>
         </a>
+        <a class="icon-btn" href="https://wa.link/06kkj8" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.5 3.5a11 11 0 0 0-16 15L3 21l2.6-1.5a11 11 0 0 0 14.9-16z"/></svg>
+        </a>
       </div>
     </div>
     <div>
@@ -475,7 +541,7 @@
     <div>
       <h4>Support</h4>
       <ul>
-        <li><a href="mailto:moderncartstore.care@gmail.com">Email support</a></li>
+        <li><a href="https://wa.link/06kkj8" target="_blank" rel="noopener">WhatsApp support</a></li>
         <li><button onclick="navigate('returns')">Return policy</button></li>
       </ul>
     </div>
@@ -488,30 +554,32 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-  /* ================= PREVENT PINCH / DOUBLE-TAP ZOOM =================
-     The <meta viewport> tag's user-scalable=no is enough on most Android
-     browsers, but modern iOS Safari deliberately ignores it (an
-     accessibility change Apple made a few years back), so pinch and
-     double-tap zoom can still slip through on iPhones without this. */
+  /* ================= STORE CONTACT CONFIG =================
+     Central place to update your WhatsApp number / UPI ID later —
+     change it here once and every page (checkout, contact, footer
+     links you add) can reuse it. */
+  const STORE_WHATSAPP_NUMBER = '918750266249';       // country code + number, no + or spaces, used for wa.me links
+  const STORE_WHATSAPP_SHORT_LINK = 'https://wa.link/06kkj8'; // your existing short link, used where a plain link (not prefilled) is enough
+  const STORE_UPI_ID = 'vishalkashyap7424@ptaxis';
+  const PREPAID_DISCOUNT_PERCENT = 5;
+
+  /* ================= PREVENT PINCH / DOUBLE-TAP ZOOM ================= */
   document.addEventListener('gesturestart', e => e.preventDefault());
   document.addEventListener('gesturechange', e => e.preventDefault());
   document.addEventListener('gestureend', e => e.preventDefault());
   document.addEventListener('touchmove', e => {
-    if(e.touches.length > 1) e.preventDefault(); // blocks two-finger pinch
+    if(e.touches.length > 1) e.preventDefault();
   }, { passive: false });
   let lastTouchEnd = 0;
   document.addEventListener('touchend', e => {
     const now = Date.now();
-    if(now - lastTouchEnd <= 300) e.preventDefault(); // blocks double-tap zoom
+    if(now - lastTouchEnd <= 300) e.preventDefault();
     lastTouchEnd = now;
   }, false);
 
   /* ================= NAVIGATION / SPA ROUTING ================= */
-  /* Routing lives in the URL hash (#about, #contact, #returns, #checkout,
-     #product/slug) so a browser refresh lands back on the same page
-     instead of resetting to home. */
   const ALL_VIEWS = ['home','about','contact','returns','product','checkout'];
-  const NAV_HIGHLIGHT_MAP = { product:'home', checkout:'home' }; // which nav tab to light up for sub-pages
+  const NAV_HIGHLIGHT_MAP = { product:'home', checkout:'home' };
 
   function renderView(view){
     ALL_VIEWS.forEach(v=>{
@@ -528,7 +596,6 @@
   function navigate(view){
     const target = view === 'home' ? '' : view;
     if(window.location.hash.replace('#','') === target){
-      // hash isn't changing (already here) -> hashchange won't fire, so render directly
       if(view === 'checkout') renderCheckoutPage();
       renderView(view);
     } else {
@@ -583,18 +650,7 @@
     }, 2200);
   }
 
-  /* ================= LEAD CAPTURE (newsletter + contact form) =================
-     IMPORTANT, READ THIS: a static HTML page cannot auto-send a message to your
-     Instagram inbox. Real Instagram DMs require Meta's official Messaging API,
-     a verified business app, and a server component to call it — none of which
-     exist in a plain HTML file like this one. The practical, no-backend option
-     used below is a "mailto:" link: it opens the VISITOR's own email app with
-     a message already addressed to moderncartstore.care@gmail.com, so it lands in your
-     real inbox with no setup required. If you want submissions to land silently
-     without opening the visitor's email app, swap the two functions below for
-     a form-backend service such as Formspree or Getform (they give you a POST
-     URL you can drop straight into the <form action="..."> tags above).
-     ================================================================ */
+  /* ================= LEAD CAPTURE (newsletter + contact form) ================= */
   function joinList(e){
     e.preventDefault();
     const email = e.target.querySelector('input[type=email]').value;
@@ -714,26 +770,15 @@
   window.addEventListener('DOMContentLoaded', () => { updateCartUI(); });
 
   /* ================= PRODUCT CATALOG =================
-     ------------------------------------------------------------------
-     HOW TO CHANGE PRODUCT IMAGES LATER (read this when you're ready):
-     Every product below renders as a procedurally generated 3D shape,
-     built by its `build(brassMat)` function using Three.js primitives —
-     there are no photo files involved yet.
-
-     To swap a product over to a REAL PHOTO instead of the 3D shape:
-       1. Put your image file next to this HTML file (or use a URL).
-       2. Add an `image: "your-file.jpg"` field to that product object,
-          right alongside `name`, `price`, etc. (see the commented
-          example on the very first product below).
-       3. That's it — `mountProductMedia()` further down already checks
-          for `p.image` and will show your photo instead of the 3D
-          shape automatically. You don't need to touch any other code.
-     ------------------------------------------------------------------ */
+     To swap a product's 3D shape for a real photo later, add
+     `image: "your-file.jpg"` to that product object — mountProductMedia()
+     already checks for p.image and will use it automatically. */
   const ALL_PRODUCTS = [
     { featured:true, name:"Braided USB-C Cable", cat:"cables", catLabel:"Charging cables", price:"₹179",
-      // image: "images/usb-c-cable.jpg",   <-- uncomment + point at a real photo to replace the 3D shape
-      desc:"A 1.5m braided USB-C cable built for daily pocket-and-bag abuse, not just a desk drawer.",
-      benefits:["1.5m braided nylon jacket","60W fast charging support","10,000+ bend life cycle"],
+      desc:"A 1.5m braided USB-C cable built for daily pocket-and-bag abuse, not just a desk drawer. The double-braided nylon jacket resists fraying at the connector — the single most common failure point on cheaper cables — while the reinforced aluminium heads are rated for over ten thousand bend cycles. Supports up to 60W fast charging, so it works equally well for phones, tablets, and most USB-C laptops.",
+      benefits:["1.5m braided nylon jacket, tangle resistant","60W fast charging support","10,000+ bend life cycle","Reinforced aluminium connector heads","Compatible with all standard USB-C devices"],
+      rating:4.4, ratingCount:212,
+      specs:{ "Length":"1.5 metres", "Connector":"USB-C to USB-C", "Max output":"60W / 3A", "Material":"Braided nylon + aluminium", "In the box":"1x cable", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
@@ -751,8 +796,10 @@
       }
     },
     { featured:true, name:"Smartwatch Pro", cat:"watches", catLabel:"Smartwatches", price:"₹899",
-      desc:"An everyday smartwatch with a bright always-on display and a battery that actually lasts the week.",
-      benefits:["7-day battery life","Always-on AMOLED display","5ATM water resistance"],
+      desc:"An everyday smartwatch built around a battery that actually lasts the week, not just the spec sheet. The always-on AMOLED display stays readable in direct sunlight, and 5ATM water resistance means it survives handwashing, rain, and the occasional pool dip without a second thought. Tracks steps, sleep, and heart rate in the background and syncs quietly to your phone.",
+      benefits:["7-day battery life on a single charge","Always-on AMOLED display, sunlight readable","5ATM water resistance","Continuous heart rate + sleep tracking","Syncs with iOS and Android"],
+      rating:4.2, ratingCount:158,
+      specs:{ "Display":"1.4\" AMOLED, always-on", "Battery":"Up to 7 days", "Water resistance":"5ATM", "Compatibility":"Android 8+ / iOS 12+", "Strap":"Silicone, swappable", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x14171f, metalness:0.5, roughness:0.3});
@@ -771,8 +818,10 @@
       }
     },
     { featured:true, name:"Ceramic Table Vase", cat:"decor", catLabel:"Home decor", price:"₹599",
-      desc:"A hand-glazed ceramic vase sized for a single stem or a small everyday bunch.",
-      benefits:["Hand-glazed ceramic","Food-safe finish","Fits fresh or dried stems"],
+      desc:"A hand-glazed ceramic vase sized for a single stem or a small everyday bunch — the kind of piece that looks intentional on a shelf even when it's empty. The narrow neck holds stems upright without extra support, and the food-safe glaze means fresh flowers and water are no issue.",
+      benefits:["Hand-glazed ceramic, no two pieces identical","Food-safe interior glaze","Fits fresh or dried stems","Weighted base resists tipping"],
+      rating:4.6, ratingCount:94,
+      specs:{ "Material":"Glazed ceramic", "Height":"18 cm", "Diameter":"9 cm at base", "Care":"Hand wash only", "Warranty":"30-day return" },
       build: brassMat => {
         const g = new THREE.Group();
         const ceramic = new THREE.MeshStandardMaterial({color:0xEDE7DA, metalness:0.05, roughness:0.6});
@@ -789,8 +838,10 @@
       }
     },
     { featured:true, name:"Wooden Wall Clock", cat:"decor", catLabel:"Home decor", price:"₹899",
-      desc:"A solid oak wall clock with a silent sweep movement — no ticking to notice at 2am.",
-      benefits:["Solid oak face","Silent sweep movement","30cm diameter"],
+      desc:"A solid oak wall clock with a silent sweep movement — no audible ticking to notice at 2am. The 30cm face is large enough to read from across a room, and the oak grain is left visible under a light matte finish rather than painted over.",
+      benefits:["Solid oak face with visible grain","Silent sweep movement, zero ticking noise","30cm diameter, readable from a distance","Runs on 1x AA battery (not included)"],
+      rating:4.5, ratingCount:76,
+      specs:{ "Material":"Solid oak", "Diameter":"30 cm", "Movement":"Silent sweep quartz", "Power":"1x AA battery", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
         const wood = new THREE.MeshStandardMaterial({color:0x8a5a34, metalness:0.05, roughness:0.7});
@@ -809,8 +860,10 @@
       }
     },
     { featured:false, name:"Fast Charge Cable 3-Pack", cat:"cables", catLabel:"Charging cables · Nylon", price:"₹449",
-      desc:"Three lengths, one pack — a short one for your desk, a long one for the couch, a travel one for your bag.",
-      benefits:["3 cables per pack: 0.3m / 1m / 2m","65W PD support","Reinforced aluminium connectors"],
+      desc:"Three lengths in one pack — a short 0.3m for your desk, a 1m for the couch, and a 2m travel length for your bag — so you're never hunting for the right cable. All three support 65W PD fast charging and share the same reinforced aluminium connector build as our single cables.",
+      benefits:["3 cables per pack: 0.3m / 1m / 2m","65W PD support on all three","Reinforced aluminium connectors","Includes a cable tie for storage"],
+      rating:4.3, ratingCount:141,
+      specs:{ "Pack contents":"0.3m + 1m + 2m cables", "Max output":"65W PD", "Connector":"USB-C to USB-C", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
@@ -829,8 +882,10 @@
       }
     },
     { featured:false, name:"USB-C to Lightning Cable", cat:"cables", catLabel:"Charging cables · 6ft", price:"₹249",
-      desc:"A 6ft cable that bridges USB-C chargers with Lightning-style devices, so one charger covers everything.",
-      benefits:["MFi-style compatible connector","6ft length","20W fast charge support"],
+      desc:"A 6ft cable that bridges a USB-C charger with a Lightning-style device, so one charger covers everything on your desk. The extra length means you can keep using your phone comfortably while it charges across a room or from a wall outlet.",
+      benefits:["MFi-style compatible connector","6ft (1.8m) length","20W fast charge support","Reinforced strain-relief at both ends"],
+      rating:4.1, ratingCount:88,
+      specs:{ "Length":"6 ft (1.8 m)", "Connector":"USB-C to Lightning-style", "Max output":"20W", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
@@ -848,8 +903,10 @@
       }
     },
     { featured:false, name:"Magnetic Charging Cable", cat:"cables", catLabel:"Charging cables · Steel tip", price:"₹299",
-      desc:"Snap it on instead of fumbling for the port — the magnetic tip lines itself up in the dark.",
-      benefits:["Snap-on magnetic tip","540° rotating connector","Reversible — can't plug in wrong"],
+      desc:"Snap it on instead of fumbling for the port in the dark — the magnetic tip lines itself up automatically, and the connector rotates 540° so the cable never fights the angle you're holding your phone at.",
+      benefits:["Snap-on magnetic tip","540° rotating connector, no wrong angle","Reversible — physically can't plug in wrong","18W fast charge support"],
+      rating:4.0, ratingCount:65,
+      specs:{ "Length":"1 metre", "Connector":"Magnetic USB-C", "Max output":"18W", "Warranty":"6 months" },
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.35, roughness:0.55});
@@ -865,8 +922,10 @@
       }
     },
     { featured:false, name:"Smartwatch Lite", cat:"watches", catLabel:"Smartwatches · Silicone band", price:"₹649",
-      desc:"A lighter, simpler smartwatch for everyday wear — sleep and heart-rate tracking without the bulk.",
-      benefits:["Lightweight silicone band","10-day battery life","Sleep + heart rate tracking"],
+      desc:"A lighter, simpler smartwatch for everyday wear — sleep and heart-rate tracking without the bulk or the price of the Pro model. The soft silicone band stays comfortable through a full day, gym session included.",
+      benefits:["Lightweight silicone band","10-day battery life","Sleep + heart rate tracking","Notification mirroring from your phone"],
+      rating:4.0, ratingCount:112,
+      specs:{ "Display":"1.1\" colour LCD", "Battery":"Up to 10 days", "Water resistance":"IP68", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x20242e, metalness:0.3, roughness:0.5});
@@ -883,8 +942,10 @@
       }
     },
     { featured:false, name:"Smartwatch Sport", cat:"watches", catLabel:"Smartwatches · GPS", price:"₹1,199",
-      desc:"Built-in GPS and a MIL-STD-tested bezel for the smartwatch that has to survive an actual workout.",
-      benefits:["Built-in GPS","Rugged bezel, MIL-STD tested","50 sport modes"],
+      desc:"Built-in GPS means you don't need your phone along for a run or a ride, and the MIL-STD-tested bezel is rated for drops, dust, and temperature swings — this is the one built to survive an actual workout, not just a walk to the kitchen.",
+      benefits:["Built-in GPS, no phone required","Rugged bezel, MIL-STD-810G tested","50 sport modes","5ATM water resistance"],
+      rating:4.3, ratingCount:97,
+      specs:{ "Display":"1.3\" AMOLED", "Battery":"Up to 5 days (GPS on: 20 hrs)", "Water resistance":"5ATM", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x14171f, metalness:0.4, roughness:0.4});
@@ -903,8 +964,10 @@
       }
     },
     { featured:false, name:"Watch Charging Dock", cat:"watches", catLabel:"Smartwatches · Accessory", price:"₹349",
-      desc:"A weighted charging puck that keeps your smartwatch upright and charging on your nightstand.",
-      benefits:["Magnetic fast-charge puck","Non-slip weighted base","1.2m braided cable included"],
+      desc:"A weighted charging puck that keeps your smartwatch upright and charging on your nightstand instead of sliding off a flat charging pad. The non-slip base keeps it planted even if you bump the desk.",
+      benefits:["Magnetic fast-charge puck","Non-slip weighted base","1.2m braided cable included","Compact enough for travel"],
+      rating:4.2, ratingCount:53,
+      specs:{ "Cable length":"1.2 metres", "Compatibility":"ModernCart Smartwatch Pro / Lite / Sport", "Warranty":"6 months" },
       build: brassMat => {
         const g = new THREE.Group();
         const dark = new THREE.MeshStandardMaterial({color:0x1a1e27, metalness:0.4, roughness:0.5});
@@ -918,8 +981,10 @@
       }
     },
     { featured:false, name:"Incense Holder Set", cat:"decor", catLabel:"Home decor · Ceramic", price:"₹349",
-      desc:"A solid sheesham wood holder that catches ash cleanly instead of leaving a mess on the shelf.",
-      benefits:["Solid sheesham wood","Catches ash cleanly","Fits standard incense sticks"],
+      desc:"A solid sheesham wood holder that catches falling ash cleanly instead of leaving a mess on the shelf below. Three slots let you burn multiple sticks at once, or keep spares ready to go.",
+      benefits:["Solid sheesham wood, not painted MDF","Catches ash cleanly in a built-in tray","Fits standard incense sticks","3 slots for multiple sticks"],
+      rating:4.4, ratingCount:61,
+      specs:{ "Material":"Solid sheesham wood", "Length":"18 cm", "Slots":"3", "Warranty":"30-day return" },
       build: brassMat => {
         const g = new THREE.Group();
         const wood = new THREE.MeshStandardMaterial({color:0x6b4a30, metalness:0.05, roughness:0.75});
@@ -937,8 +1002,10 @@
       }
     },
     { featured:false, name:"Warm Oak Table Lamp", cat:"decor", catLabel:"Home decor · Lighting", price:"₹1,299",
-      desc:"A dimmable warm-white lamp on a solid oak base, with a linen shade that softens the light.",
-      benefits:["Dimmable warm-white LED","Solid oak base","Linen shade"],
+      desc:"A dimmable warm-white lamp on a solid oak base, with a linen shade that softens the light instead of throwing a harsh cone across the room. Good for a bedside table or a reading corner where you want warmth, not brightness.",
+      benefits:["Dimmable warm-white LED, 3 brightness levels","Solid oak base, won't tip easily","Linen shade diffuses light softly","Standard plug, no special wiring needed"],
+      rating:4.5, ratingCount:39,
+      specs:{ "Material":"Oak base + linen shade", "Height":"38 cm", "Bulb":"LED, included", "Warranty":"1 year" },
       build: brassMat => {
         const g = new THREE.Group();
         const wood = new THREE.MeshStandardMaterial({color:0x8a5a34, metalness:0.05, roughness:0.7});
@@ -964,19 +1031,12 @@
     return ALL_PRODUCTS.find(p=>slugify(p.name)===slug) || null;
   }
 
-  /* ================= SHARED 3D MOUNTING HELPER =================
-     Used by the Featured grid, the More-from-the-shop grid, AND the
-     product detail page, so the drag-to-rotate behaviour is identical
-     everywhere and only exists in one place in the code.
+  function starString(rating){
+    const full = Math.round(rating);
+    return '★'.repeat(full) + '☆'.repeat(5-full);
+  }
 
-     MOBILE FIX: creating a full Three.js WebGLRenderer for every single
-     product card at once (12 on this page) blew past the limited number
-     of simultaneous WebGL contexts most phones allow, which crashed the
-     tab to a blank white page. Grid cards now build their 3D scene lazily
-     via IntersectionObserver (only while scrolled into view) and dispose
-     their renderer when scrolled away, so only a couple of contexts are
-     ever alive at once. The product detail page still builds immediately
-     since it's the only 3D scene on that page. */
+  /* ================= SHARED 3D MOUNTING HELPER (mobile-safe, lazy) ================= */
   function isMobileDevice(){
     return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 900;
   }
@@ -994,19 +1054,6 @@
     let targetRotY = 0.5, currentRotY = 0.5, autoRotate = true, dragging = false, lastX = 0;
     let resizeObs = null, io = null, rafId = null, built = false;
 
-    // Pointer handlers are attached once to the (persistent) canvas element,
-    // not re-attached on every build/dispose cycle, so scrolling a card in
-    // and out of view repeatedly can't pile up duplicate listeners.
-    //
-    // AXIS LOCK: on touch/pen we don't know yet whether the person wants to
-    // rotate the product or scroll the page, so we wait for a few pixels of
-    // movement and check which direction dominates. A mostly-horizontal move
-    // locks into "rotate" (and captures the pointer so the drag keeps working
-    // smoothly even if the finger slides off the canvas). A mostly-vertical
-    // move locks into "scroll" — we release immediately and let the browser's
-    // native touch scrolling take over, so the page glides normally under a
-    // finger that touched a product card. Mouse drags skip this and rotate
-    // immediately in any direction, since a mouse never triggers page scroll.
     let axis = null, downX = 0, downY = 0, resumeTimer = null;
     function onPointerDown(e){
       if(resumeTimer){ clearTimeout(resumeTimer); resumeTimer = null; }
@@ -1019,11 +1066,11 @@
       if(!dragging) return;
       if(axis === null){
         const dx = e.clientX - downX, dy = e.clientY - downY;
-        if(Math.abs(dx) < 6 && Math.abs(dy) < 6) return; // not enough movement yet to tell intent
+        if(Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
         axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
         if(axis === 'x' && canvas.setPointerCapture){ try{ canvas.setPointerCapture(e.pointerId); }catch(err){} }
       }
-      if(axis === 'y'){ dragging = false; return; } // vertical intent — hand control back to page scroll
+      if(axis === 'y'){ dragging = false; return; }
       targetRotY += (e.clientX - lastX) * 0.012;
       lastX = e.clientX;
     }
@@ -1137,7 +1184,6 @@
     return { el: card, controller };
   }
 
-  /* ---- Featured grid (always the same 4) ---- */
   const grid = document.getElementById('featured-grid');
   const scenes = [];
   featured.forEach((p, idx)=>{
@@ -1146,7 +1192,6 @@
     if(controller) scenes.push(controller);
   });
 
-  /* ---- More-from-the-shop grid (filterable, rebuilt on chip clicks) ---- */
   let moreSceneControllers = [];
   const categories = [
     {id:'all', label:'All'}, {id:'cables', label:'Cables'}, {id:'watches', label:'Watches'}, {id:'decor', label:'Home decor'}
@@ -1168,8 +1213,6 @@
   }
   const flatGrid = document.getElementById('flat-grid');
   function renderFlatGrid(){
-    // Fully tear down old scenes (renderer + IntersectionObserver) before rebuilding
-    // so repeated filter clicks can't leak GPU memory or observers.
     moreSceneControllers.forEach(c=>{ if(c.fullDispose) c.fullDispose(); });
     moreSceneControllers = [];
     flatGrid.innerHTML = '';
@@ -1193,13 +1236,18 @@
   }
   animateAll();
 
-  /* ================= PRODUCT DETAIL PAGE ================= */
+  /* ================= PRODUCT DETAIL PAGE (Flipkart/Amazon-style) ================= */
   let currentProductController = null;
   function stopProductScene(){
     if(currentProductController){
       currentProductController.dispose();
       currentProductController = null;
     }
+  }
+
+  function setPdTab(tab){
+    document.querySelectorAll('.pd-tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+    document.querySelectorAll('.pd-tab-panel').forEach(p=>p.hidden = p.dataset.panel!==tab);
   }
 
   function renderProductPage(slug){
@@ -1218,14 +1266,17 @@
       return;
     }
 
+    const specsRows = Object.entries(p.specs||{}).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+
     container.innerHTML = `
       <button class="page-back" onclick="navigate('home')">&larr; Back to shop</button>
       <div class="eyebrow">${p.catLabel}</div>
       <div class="product-detail-grid">
         <div class="canvas-wrap" id="pd-media" style="max-width:420px;"></div>
         <div class="product-detail-info">
-          <h1 style="margin-bottom:6px;">${p.name}</h1>
-          <div class="p-price" style="font-size:20px;margin:10px 0 16px;">${p.price}</div>
+          <h1 style="margin-bottom:2px;">${p.name}</h1>
+          ${p.rating ? `<div class="pd-rating"><span class="stars">${starString(p.rating)}</span><span>${p.rating.toFixed(1)} · ${p.ratingCount} ratings</span></div>` : ''}
+          <div class="p-price" style="font-size:20px;margin:6px 0 16px;">${p.price}</div>
           <p>${p.desc || ''}</p>
           <ul class="benefits-list">
             ${(p.benefits||[]).map(b=>`<li>${b}</li>`).join('')}
@@ -1236,6 +1287,17 @@
           </div>
         </div>
       </div>
+      <div class="pd-tabs">
+        <button class="pd-tab active" data-tab="specs" onclick="setPdTab('specs')">Specifications</button>
+        <button class="pd-tab" data-tab="shipping" onclick="setPdTab('shipping')">Shipping &amp; returns</button>
+      </div>
+      <div class="pd-tab-panel" data-panel="specs">
+        <table>${specsRows}</table>
+      </div>
+      <div class="pd-tab-panel" data-panel="shipping" hidden>
+        <p style="margin-bottom:10px;">Free shipping on orders over ₹499. Standard delivery in 3–6 business days depending on your location.</p>
+        <p>Not right for you? See our <button class="btn-ghost" style="padding:4px 10px;display:inline-flex;" onclick="navigate('returns')">return policy</button> for the exact window on this category.</p>
+      </div>
     `;
     document.getElementById('pd-add').addEventListener('click', (e)=> addToCart(p.name, p.price, e));
 
@@ -1244,8 +1306,20 @@
     renderView('product');
   }
 
-  /* ================= CHECKOUT PAGE ================= */
+  /* ================= CHECKOUT PAGE =================
+     Two payment paths:
+       - Cash on delivery: no discount, pay the rider when it arrives.
+       - Prepaid via UPI: get PREPAID_DISCOUNT_PERCENT% off, pay the UPI
+         ID above, then screenshot the payment and send it on WhatsApp.
+     Either way, "Place order" builds a WhatsApp message with the full
+     order (items, quantities, total, chosen payment method, shipping
+     details) and opens a wa.me link straight to your number so it lands
+     as a real WhatsApp message you can act on immediately — no backend
+     server needed for this. */
+  let selectedPayment = 'cod';
+
   function renderCheckoutPage(){
+    selectedPayment = 'cod';
     const el = document.getElementById('checkout-content');
     if(cart.length === 0){
       el.innerHTML = `
@@ -1254,7 +1328,22 @@
       `;
       return;
     }
+    renderCheckoutBody();
+  }
+
+  function checkoutTotals(){
     const subtotal = cart.reduce((s,i)=> s + i.price*i.qty, 0);
+    const discount = Math.round(subtotal * PREPAID_DISCOUNT_PERCENT / 100);
+    const prepaidTotal = subtotal - discount;
+    return { subtotal, discount, prepaidTotal };
+  }
+
+  function renderCheckoutBody(){
+    const el = document.getElementById('checkout-content');
+    const { subtotal, discount, prepaidTotal } = checkoutTotals();
+    const isPrepaid = selectedPayment === 'prepaid';
+    const finalTotal = isPrepaid ? prepaidTotal : subtotal;
+
     el.innerHTML = `
       <div class="contact-grid">
         <div>
@@ -1268,40 +1357,138 @@
               <div class="p-price">₹${(i.price*i.qty).toLocaleString('en-IN')}</div>
             </div>
           `).join('')}
-          <div class="cart-sub" style="margin-top:16px;"><span>Total</span><span class="amt">₹${subtotal.toLocaleString('en-IN')}</span></div>
+
+          <div class="cart-sub" style="margin-top:16px;">
+            <span>Subtotal</span>
+            <span class="amt">₹${subtotal.toLocaleString('en-IN')}</span>
+          </div>
+          ${isPrepaid ? `
+            <div class="cart-sub" style="color:var(--sage);">
+              <span>Prepaid discount (${PREPAID_DISCOUNT_PERCENT}%)</span>
+              <span>&minus; ₹${discount.toLocaleString('en-IN')}</span>
+            </div>
+          ` : ''}
+          <div class="cart-sub" style="font-size:17px;border-top:1px solid var(--border);padding-top:12px;">
+            <span>Total to pay</span>
+            <span class="amt">
+              ${isPrepaid ? `<span class="price-cut">₹${subtotal.toLocaleString('en-IN')}</span>` : ''}
+              ₹${finalTotal.toLocaleString('en-IN')}
+            </span>
+          </div>
+
+          <h3 style="margin:26px 0 10px;font-size:16px;font-weight:500;">Payment method</h3>
+          <div class="pay-options">
+            <div class="pay-option ${selectedPayment==='cod'?'selected':''}" onclick="selectPayment('cod')">
+              <div class="po-head">
+                <input type="radio" name="payMethod" value="cod" ${selectedPayment==='cod'?'checked':''} onclick="event.stopPropagation();selectPayment('cod')">
+                <span>Cash on delivery</span>
+              </div>
+            </div>
+            <div class="pay-option ${selectedPayment==='prepaid'?'selected':''}" onclick="selectPayment('prepaid')">
+              <div class="po-head">
+                <input type="radio" name="payMethod" value="prepaid" ${selectedPayment==='prepaid'?'checked':''} onclick="event.stopPropagation();selectPayment('prepaid')">
+                <span>Prepaid — pay via UPI</span>
+                <span class="po-badge">Save ${PREPAID_DISCOUNT_PERCENT}%</span>
+              </div>
+              ${isPrepaid ? `
+                <div class="prepaid-details">
+                  <div>Pay <strong style="color:var(--brass);">₹${prepaidTotal.toLocaleString('en-IN')}</strong> to our UPI ID:</div>
+                  <div class="upi-box">
+                    <span class="mono" id="upiIdText">${STORE_UPI_ID}</span>
+                    <button type="button" class="copy-btn" onclick="copyUpiId(event)">Copy</button>
+                  </div>
+                  <div>After paying, take a screenshot of the payment confirmation and send it to us on WhatsApp at <strong>+91 87502 66249</strong> along with your name and order details — this confirms your payment so we can start packing right away.</div>
+                  <a href="${STORE_WHATSAPP_SHORT_LINK}" target="_blank" rel="noopener" class="btn-ghost" style="width:fit-content;margin-top:4px;">Open WhatsApp to send screenshot</a>
+                </div>
+              ` : ''}
+            </div>
+          </div>
         </div>
+
         <form class="contact-form" id="checkoutForm" onsubmit="return placeOrder(event)">
           <h3 style="font-size:16px;font-weight:500;">Shipping details</h3>
-          <input type="text" placeholder="Full name" required>
-          <input type="tel" placeholder="Phone number" required>
-          <input type="text" placeholder="Address" required>
-          <input type="text" placeholder="City / Pincode" required>
-          <div style="display:flex;gap:16px;font-size:14px;color:var(--bone-dim);margin-top:4px;">
-            <label><input type="radio" name="pay" value="cod" checked> Cash on delivery</label>
-            <label><input type="radio" name="pay" value="card"> Card (demo)</label>
-          </div>
+          <input type="text" id="ck-name" placeholder="Full name" required>
+          <input type="tel" id="ck-phone" placeholder="Phone number" required>
+          <input type="text" id="ck-address" placeholder="Address" required>
+          <input type="text" id="ck-city" placeholder="City / Pincode" required>
           <button type="submit" class="btn-primary" style="justify-content:center;margin-top:8px;">Place order</button>
-          <p style="font-size:12px;color:var(--bone-dim);margin:6px 0 0;">This is a UI demo — no real payment is processed. Taking real payments needs a payment gateway (e.g. Razorpay) plus a backend server.</p>
+          <p style="font-size:12px;color:var(--bone-dim);margin:6px 0 0;">Placing your order opens WhatsApp with your order details pre-filled, sent straight to our store number — our team confirms and arranges delivery from there.</p>
         </form>
       </div>
     `;
   }
+
+  function selectPayment(method){
+    selectedPayment = method;
+    renderCheckoutBody();
+  }
+
+  function copyUpiId(e){
+    e.stopPropagation();
+    navigator.clipboard?.writeText(STORE_UPI_ID).then(()=>{
+      showToast('UPI ID copied');
+    }).catch(()=>{
+      showToast('Could not copy — please copy it manually');
+    });
+  }
+
   function placeOrder(e){
     e.preventDefault();
+    const name = document.getElementById('ck-name').value;
+    const phone = document.getElementById('ck-phone').value;
+    const address = document.getElementById('ck-address').value;
+    const city = document.getElementById('ck-city').value;
+    const { subtotal, discount, prepaidTotal } = checkoutTotals();
+    const isPrepaid = selectedPayment === 'prepaid';
+    const finalTotal = isPrepaid ? prepaidTotal : subtotal;
     const orderId = 'MC-' + Math.floor(100000 + Math.random()*900000);
+
+    const itemLines = cart.map(i => `• ${i.name} x${i.qty} — ₹${(i.price*i.qty).toLocaleString('en-IN')}`).join('\n');
+    const paymentLine = isPrepaid
+      ? `Payment: Prepaid via UPI (${PREPAID_DISCOUNT_PERCENT}% off applied) — Total ₹${finalTotal.toLocaleString('en-IN')}`
+      : `Payment: Cash on delivery — Total ₹${finalTotal.toLocaleString('en-IN')}`;
+
+    const message =
+`Hello ModernCart Store 👋
+
+I want to order (Order ID: ${orderId}):
+
+${itemLines}
+
+${paymentLine}
+
+Shipping details:
+Name: ${name}
+Phone: ${phone}
+Address: ${address}
+City/Pincode: ${city}
+
+${isPrepaid ? 'I have paid via UPI to ' + STORE_UPI_ID + ' — sharing the payment screenshot here.' : 'Please confirm and arrange COD delivery.'}`;
+
+    const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+    // Clear the cart now that the order has been handed off
     cart = [];
     localStorage.setItem('modernCartData', JSON.stringify(cart));
     updateCartUI();
-    document.getElementById('checkout-content').innerHTML = `
-      <div class="eyebrow">Order placed</div>
-      <h1 style="font-size:28px;">Thanks — order ${orderId} is confirmed</h1>
-      <p>This is a demo confirmation screen. Connect a real payment gateway and backend to accept live orders and actually fulfil them.</p>
-      <button class="btn-primary" onclick="navigate('home')">Back to shop</button>
-    `;
+
+    document.getElementById('modalMsg').textContent = isPrepaid
+      ? `Order ${orderId} is ready. Tap continue to open WhatsApp with your order details — remember to also send your payment screenshot there so our team can confirm and dispatch it.`
+      : `Order ${orderId} is ready. Tap continue to open WhatsApp with your order details — our team will confirm your COD order and arrange delivery.`;
+
+    const modal = document.getElementById('successModal');
+    modal.classList.add('open');
+    const continueBtn = document.getElementById('modalContinueBtn');
+    continueBtn.onclick = () => {
+      modal.classList.remove('open');
+      window.open(waUrl, '_blank');
+      navigate('home');
+    };
+
     return false;
   }
 
-  /* Initial load: render whatever the URL hash points to (home/about/contact/returns/checkout/product/slug) */
+  /* Initial load: render whatever the URL hash points to */
   routeFromHash();
 </script>
 </body>

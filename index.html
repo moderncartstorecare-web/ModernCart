@@ -74,16 +74,25 @@
   #themeFade{
     position:fixed;inset:0;z-index:9999;pointer-events:none;
     background:#0B0E14;
-    clip-path:circle(0% at 50% 0%);
-    -webkit-clip-path:circle(0% at 50% 0%);
+    /* The end radius is a real length, not a percentage. Percentages in
+       circle() resolve against the box's "diagonal / sqrt(2)", which on tall
+       phone screens is far SMALLER than the distance from the top-centre to a
+       bottom corner — that is why the circle used to stop around 80% of the
+       way down on mobile. (100vh + 55vw) is always >= hypot(100vh, 50vw), so
+       the circle is guaranteed to clear the bottom corners on any aspect
+       ratio; JS refines it to the exact pixel value on each toggle. */
+    --fade-r:calc(100vh + 55vw);
+    clip-path:circle(0px at 50% 0%);
+    -webkit-clip-path:circle(0px at 50% 0%);
     /* ease-in-out so the circle grows at an even, unhurried pace rather than
-       snapping open early. 112% is just enough to clear the bottom corners. */
+       snapping open early. */
     transition:clip-path 1.15s cubic-bezier(.42,0,.58,1), -webkit-clip-path 1.15s cubic-bezier(.42,0,.58,1);
     will-change:clip-path;
+    transform:translateZ(0);
   }
   #themeFade.show{
-    clip-path:circle(112% at 50% 0%);
-    -webkit-clip-path:circle(112% at 50% 0%);
+    clip-path:circle(var(--fade-r) at 50% 0%);
+    -webkit-clip-path:circle(var(--fade-r) at 50% 0%);
   }
   @media (prefers-reduced-motion: reduce){
     #themeFade{transition-duration:.01s;}
@@ -109,8 +118,24 @@
     #nav-logo{height:20px !important;}
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{background:var(--ink);color:var(--bone);font-family:'Inter',sans-serif;overflow-x:hidden;width:100%;touch-action:pan-y;transition:background .25s ease, color .25s ease;}
+  html{
+    scroll-behavior:smooth;
+    -webkit-text-size-adjust:100%;
+    /* iOS momentum scrolling + no sideways rubber-banding */
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:none;
+  }
+  body{
+    background:var(--ink);color:var(--bone);font-family:'Inter',sans-serif;
+    overflow-x:hidden;width:100%;touch-action:pan-y;
+    transition:background .25s ease, color .25s ease;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:none;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+  }
   img,canvas{max-width:100%;}
   h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
@@ -180,7 +205,11 @@
   /* ---------- 3D PRODUCT CARDS (used for both Featured and More) ---------- */
   .product-grid{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:20px;padding:0 5vw 100px;}
   .p-card{background:var(--ink-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;min-width:0;transition:border-color .3s ease, box-shadow .3s ease, transform .3s ease;box-shadow:var(--shadow-sm);}
-  .p-card:hover{border-color:var(--brass-dim);box-shadow:var(--shadow-md);transform:translateY(-3px);}
+  /* Hover-only devices: phones don't need (and shouldn't get) the lift, which
+     otherwise sticks after a tap and forces extra compositing while scrolling. */
+  @media (hover:hover) and (pointer:fine){
+    .p-card:hover{border-color:var(--brass-dim);box-shadow:var(--shadow-md);transform:translateY(-3px);}
+  }
   .p-index{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--brass);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
   .p-index .badge{background:rgba(245,241,232,0.08);color:var(--bone-dim);padding:4px 9px;border-radius:999px;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.5px;text-transform:uppercase;}
   .canvas-wrap{position:relative;width:100%;aspect-ratio:1/1;border-radius:10px;background:radial-gradient(circle at 30% 25%, var(--stage-1), var(--stage-2));overflow:hidden;touch-action:pan-y;transition:background .25s ease;}
@@ -396,6 +425,15 @@
     .burger{display:flex;}
     .features{grid-template-columns:1fr;}
     .foot-grid{grid-template-columns:1fr 1fr;}
+    /* A live blur behind a fixed bar is one of the most expensive things a
+       phone GPU can do while scrolling — use a solid bar instead. */
+    nav{
+      background:var(--nav-1);
+      backdrop-filter:none;
+      -webkit-backdrop-filter:none;
+    }
+    /* Give the browser fewer pixels to worry about off-screen. */
+    .p-card{contain:paint;}
   }
   @media (max-width:560px){
     .product-grid{grid-template-columns:1fr;}
@@ -694,11 +732,35 @@
     if(toggle) toggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
   }
   let themeSwitching = false;
+  /* Exact radius needed for a circle centred on the top edge (50% 0%) to cover
+     every pixel of the screen: the distance from that point to a bottom
+     corner. On mobile we also take the collapsed-URL-bar height (screen.height)
+     into account so the circle still reaches the bottom when the browser
+     chrome hides mid-animation. */
+  function fadeRadiusPx(){
+    const vw = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
+    const vh = Math.max(
+      window.innerHeight || 0,
+      document.documentElement.clientHeight || 0,
+      (window.screen && window.screen.height) || 0
+    );
+    return Math.ceil(Math.hypot(vw / 2, vh) * 1.04) + 24;
+  }
+  function syncFadeRadius(){
+    const fade = document.getElementById('themeFade');
+    if(fade) fade.style.setProperty('--fade-r', fadeRadiusPx() + 'px');
+  }
+  window.addEventListener('resize', syncFadeRadius);
+  window.addEventListener('orientationchange', ()=> setTimeout(syncFadeRadius, 250));
+
   function toggleTheme(){
     if(themeSwitching) return;          // ignore clicks mid-animation
     themeSwitching = true;
     const fade = document.getElementById('themeFade');
     const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+
+    // Lock in the pixel-perfect end radius for the CURRENT viewport first.
+    syncFadeRadius();
 
     // Paint the circle in the colour of the theme we're moving to, then let it
     // grow slowly out of the top edge until it covers the whole screen.
@@ -720,6 +782,7 @@
     let saved = null;
     try{ saved = localStorage.getItem('modernCartTheme'); }catch(e){}
     applyTheme(saved === 'light' ? 'light' : 'dark');
+    syncFadeRadius();
   })();
 
   /* ================= PREVENT ZOOM — MOBILE (pinch + double-tap) ================= */
@@ -1294,6 +1357,68 @@
     return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 900;
   }
 
+  /* ---------- GLOBAL WebGL GUARD ----------
+     Mobile browsers only allow a handful of simultaneous WebGL contexts. Once
+     the limit is reached the browser silently kills the OLDEST context — which
+     is exactly why a featured card would sometimes come back empty after a
+     refresh or a bit of scrolling on a phone. To make it deterministic we:
+       1. keep a registry of every card scene and of the live ones,
+       2. cap how many contexts may be alive at once (few on mobile),
+          always freeing the ones furthest from the viewport first,
+       3. re-arm any on-screen card whose context was lost, via a watchdog,
+       4. recover if the three.js CDN script itself failed to load. */
+  const ALL_SCENES  = new Set();
+  const LIVE_SCENES = new Set();
+  function maxLiveScenes(){ return isMobileDevice() ? 4 : 10; }
+  function reclaimContexts(keep){
+    if(LIVE_SCENES.size < maxLiveScenes()) return;
+    /* Only ever reclaim contexts that are genuinely off-screen, so a visible
+       card is never stolen from (which would cause a rebuild loop). */
+    const candidates = [...LIVE_SCENES]
+      .filter(s => s !== keep && !s.independent && s.distanceFromViewport() > 0)
+      .sort((a,b) => b.distanceFromViewport() - a.distanceFromViewport());
+    while(LIVE_SCENES.size >= maxLiveScenes() && candidates.length){
+      candidates.shift().dispose();
+    }
+  }
+  function threeReady(){
+    return typeof THREE !== 'undefined' && !!THREE.WebGLRenderer;
+  }
+  let threeFallbackTried = false;
+  function loadThreeFallback(){
+    if(threeFallbackTried || threeReady()) return;
+    threeFallbackTried = true;
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/three@0.128.0/build/three.min.js';
+    s.onload = ()=> ALL_SCENES.forEach(sc => sc.retry());
+    document.head.appendChild(s);
+  }
+  /* Watchdog: anything that should be showing a model but isn't gets rebuilt.
+     This is what guarantees the featured 3D products always appear, including
+     right after a refresh while the page is still settling. */
+  function sweepScenes(){
+    ALL_SCENES.forEach(sc => sc.retry());
+  }
+  setInterval(sweepScenes, 900);
+  window.addEventListener('pageshow', ()=> setTimeout(sweepScenes, 60));
+  window.addEventListener('orientationchange', ()=> setTimeout(sweepScenes, 350));
+  document.addEventListener('visibilitychange', ()=>{
+    if(!document.hidden) setTimeout(sweepScenes, 60);
+  });
+  window.addEventListener('load', ()=> setTimeout(sweepScenes, 80));
+
+  /* ---------- SCROLL STATE ----------
+     Rendering several WebGL canvases while the finger is moving is the main
+     cause of choppy scrolling on phones, so we pause the render loop during
+     the scroll and resume a moment after it settles. */
+  let isScrolling = false, scrollIdleTimer = null;
+  window.addEventListener('scroll', ()=>{
+    isScrolling = true;
+    if(scrollIdleTimer) clearTimeout(scrollIdleTimer);
+    scrollIdleTimer = setTimeout(()=>{ isScrolling = false; }, 140);
+  }, {passive:true});
+
+
   function mountProductMedia(mediaWrap, p, opts){
     opts = opts || {};
     if(p.image){
@@ -1316,13 +1441,21 @@
       canvas.addEventListener('pointermove', onPointerMove);
       canvas.addEventListener('pointerup', onPointerUp);
       canvas.addEventListener('pointercancel', onPointerUp);
-      canvas.addEventListener('webglcontextlost', (e)=>{ e.preventDefault(); dispose(); }, {once:true});
+      /* A lost context used to leave the card permanently blank. Now we tear
+         down and let the watchdog put a fresh context back if the card is
+         still on screen. */
+      canvas.addEventListener('webglcontextlost', (e)=>{
+        e.preventDefault();
+        dispose();
+        setTimeout(()=> controller.retry(), 350);
+      }, {once:true});
       return canvas;
     }
 
     let renderer=null, scene=null, camera=null, group=null;
     let targetRotY = 0.5, currentRotY = 0.5, autoRotate = true, dragging = false, lastX = 0;
     let resizeObs = null, io = null, rafId = null, built = false;
+    let visible = !!opts.independent, failures = 0, givenUp = false;
 
     let axis = null, downX = 0, downY = 0, resumeTimer = null;
     function onPointerDown(e){
@@ -1357,19 +1490,36 @@
       renderer.setSize(w, h, false);
     }
 
+    function showFallback(){
+      mediaWrap.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--bone-dim);font-size:11px;text-align:center;padding:10px;">3D preview unavailable on this device</div>';
+      canvas = null;
+      givenUp = true;
+    }
+
     function build(){
-      if(built) return;
+      if(built || givenUp) return;
+      /* three.js may still be in flight on a slow mobile connection right
+         after a refresh — wait for it instead of failing the card. */
+      if(!threeReady()){ loadThreeFallback(); return; }
+      /* Free up GPU contexts before asking for another one. */
+      reclaimContexts(controller);
       try{
         const cv = makeCanvas();
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
         camera.position.set(0, 0.4, 4.2);
-        renderer = new THREE.WebGLRenderer({canvas:cv, antialias:!isMobileDevice(), alpha:true, powerPreference:'low-power'});
+        renderer = new THREE.WebGLRenderer({canvas:cv, antialias:!isMobileDevice(), alpha:true, powerPreference:'low-power', failIfMajorPerformanceCaveat:false});
+        if(!renderer.getContext()) throw new Error('no webgl context');
       }catch(err){
-        mediaWrap.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--bone-dim);font-size:11px;text-align:center;padding:10px;">3D preview unavailable on this device</div>';
-        canvas = null;
+        if(canvas){ canvas.remove(); canvas = null; }
+        renderer = null; scene = null; camera = null;
+        failures++;
+        /* Only give up after several genuine failures — a single miss is
+           usually just a temporarily exhausted GPU, and retrying works. */
+        if(failures >= 4) showFallback();
         return;
       }
+      failures = 0;
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobileDevice() ? 1.25 : 2));
 
       const key = new THREE.DirectionalLight(0xffffff, 1.3); key.position.set(3,4,4); scene.add(key);
@@ -1384,14 +1534,35 @@
       resizeObs.observe(mediaWrap);
       resize();
       built = true;
+      LIVE_SCENES.add(controller);
+      /* The wrapper can still measure 0x0 on the very first frame after a
+         refresh (fonts/layout settling), which would leave an unsized canvas —
+         so re-measure once the layout has actually landed. */
+      requestAnimationFrame(resize);
+      setTimeout(resize, 120);
+      setTimeout(resize, 500);
+      /* Draw one frame immediately so the model is visible even if the shared
+         render loop is currently paused (e.g. mid-scroll). */
+      tick();
 
       if(opts.independent){
-        function loop(){ rafId = requestAnimationFrame(loop); tick(); }
-        loop();
+        let lastOwnFrame = 0;
+        function loop(now){
+          rafId = requestAnimationFrame(loop);
+          if(document.hidden) return;
+          const mobile = isMobileDevice();
+          if(mobile && isScrolling && !dragging) return;
+          const minDelta = mobile ? 33 : 16;
+          if(now - lastOwnFrame < minDelta) return;
+          lastOwnFrame = now;
+          tick();
+        }
+        rafId = requestAnimationFrame(loop);
       }
     }
 
     function dispose(){
+      LIVE_SCENES.delete(controller);
       if(resumeTimer){ clearTimeout(resumeTimer); resumeTimer = null; }
       if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
       if(resizeObs){ resizeObs.disconnect(); resizeObs = null; }
@@ -1415,28 +1586,69 @@
       renderer.render(scene, camera);
     }
 
+    /* Is the card attached, laid out and near enough to the viewport to be
+       worth a GPU context? Used as a safety net in case the observer is quiet. */
+    function nearViewport(){
+      if(!mediaWrap.isConnected) return false;
+      if(mediaWrap.offsetParent === null) return false;
+      const r = mediaWrap.getBoundingClientRect();
+      if(r.width === 0 || r.height === 0) return false;
+      const margin = isMobileDevice() ? 220 : 600;
+      return r.bottom > -margin && r.top < (window.innerHeight || 0) + margin;
+    }
+
     const controller = {
       tick,
       dispose,
+      independent: !!opts.independent,
+      get isBuilt(){ return built; },
+      /* How far off-screen this card is — the guard frees the furthest ones
+         first when the GPU context budget is exhausted. */
+      distanceFromViewport(){
+        if(!mediaWrap.isConnected) return Infinity;
+        const r = mediaWrap.getBoundingClientRect();
+        const vh = window.innerHeight || 0;
+        if(r.bottom < 0) return -r.bottom;
+        if(r.top > vh) return r.top - vh;
+        return 0;
+      },
       /* Called when a view is shown again (e.g. back from a product page) so
          the model is guaranteed to come back even if the observer stays quiet. */
       resume(){
-        if(built) return;
-        if(mediaWrap.offsetParent === null && mediaWrap.clientWidth === 0) return;
+        if(built || givenUp) return;
+        if(!nearViewport()) return;
+        visible = true;
         build();
       },
-      fullDispose(){ if(io){ io.disconnect(); io = null; } dispose(); }
+      /* Watchdog hook: rebuild anything that should be showing but isn't. */
+      retry(){
+        if(built || givenUp) return;
+        if(opts.independent){ if(mediaWrap.isConnected) build(); return; }
+        if(visible && nearViewport()) build();
+      },
+      fullDispose(){
+        if(io){ io.disconnect(); io = null; }
+        ALL_SCENES.delete(controller);
+        dispose();
+      }
     };
+
+    ALL_SCENES.add(controller);
 
     if(opts.independent){
       build();
+      /* Second chance in case the detail panel had not been laid out yet. */
+      requestAnimationFrame(()=> controller.retry());
     } else {
       io = new IntersectionObserver(entries=>{
         entries.forEach(entry=>{
-          if(entry.isIntersecting) build(); else dispose();
+          visible = entry.isIntersecting;
+          if(visible) build(); else dispose();
         });
-      }, {rootMargin:'600px 0px'});
+      }, {rootMargin: isMobileDevice() ? '220px 0px' : '600px 0px'});
       io.observe(mediaWrap);
+      /* Don't wait for the observer's first callback on a fresh load. */
+      requestAnimationFrame(()=>{ if(nearViewport()){ visible = true; build(); } });
     }
 
     return controller;
@@ -1509,12 +1721,22 @@
   }
   renderFlatGrid();
 
-  function animateAll(){
+  /* Shared render loop. On phones it runs at ~30fps and stands down entirely
+     while the page is being scrolled, which keeps the scroll buttery smooth
+     instead of fighting the GPU for every frame. */
+  let lastFrame = 0;
+  function animateAll(now){
     requestAnimationFrame(animateAll);
+    if(document.hidden) return;
+    const mobile = isMobileDevice();
+    if(mobile && isScrolling) return;
+    const minDelta = mobile ? 33 : 16;
+    if(now - lastFrame < minDelta) return;
+    lastFrame = now;
     scenes.forEach(s=>s.tick());
     moreSceneControllers.forEach(s=>s.tick());
   }
-  animateAll();
+  requestAnimationFrame(animateAll);
 
   /* Re-arm every home-page 3D scene when the home view becomes visible again. */
   window.resumeHomeScenes = function(){
@@ -1768,8 +1990,17 @@ ${isPrepaid ? 'I have paid via UPI to ' + STORE_UPI_ID + ' — sharing the payme
     return false;
   }
 
-  /* Initial load: render whatever the URL hash points to */
+  /* Initial load: render whatever the URL hash points to.
+     Scroll restoration is handled manually — the page is built by JS, so a
+     browser-restored scroll offset used to land in a half-built layout and
+     could leave the featured 3D cards un-mounted after a refresh. */
+  try{ if('scrollRestoration' in history) history.scrollRestoration = 'manual'; }catch(e){}
   routeFromHash();
+  /* Belt and braces after a refresh: make sure every on-screen model is up. */
+  requestAnimationFrame(()=> sweepScenes());
+  setTimeout(sweepScenes, 250);
+  setTimeout(sweepScenes, 900);
+  setTimeout(sweepScenes, 2000);
 </script>
 </body>
 </html>

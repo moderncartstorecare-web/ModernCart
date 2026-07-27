@@ -2145,48 +2145,22 @@ ${isPrepaid ? 'I have paid via UPI to ' + STORE_UPI_ID + ' — sharing the payme
     return null;
   }
 
-  /* Reliably open an external link on both desktop AND mobile. window.open is
-     often blocked on mobile when called after a modal step, so we click a
-     real anchor instead — this preserves the user gesture on iOS/Android. */
-  function openExternal(url){
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.setAttribute('data-skip-intercept', '1'); /* don't re-trigger the popup */
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function(){ if(a.parentNode) a.parentNode.removeChild(a); }, 0);
-  }
-
-  /* Single handler used for both click and touch so it works on every device. */
-  let lastHandled = 0;
-  function intercept(e){
+  /* Intercept clicks on any Instagram / WhatsApp / contact link across the
+     site (nav, footer, contact page, support links) and confirm first. */
+  document.addEventListener('click', function(e){
     if(overlay.contains(e.target)) return;
     const a = e.target.closest && e.target.closest('a[href]');
     if(!a) return;
-    if(a.getAttribute('data-skip-intercept')) return; /* let programmatic opens through */
     const info = classify(a.getAttribute('href'));
     if(!info) return;
-    /* Dedup click that follows a touchend for the same tap. */
-    const now = Date.now();
-    if(now - lastHandled < 700) { e.preventDefault(); e.stopPropagation(); return; }
-    lastHandled = now;
     e.preventDefault();
-    e.stopPropagation();
     openModal(info.type, info.url);
-  }
-
-  /* Intercept taps on any Instagram / WhatsApp / contact link across the
-     site (nav, footer, contact page, support links) and confirm first.
-     Bind touchend as well so mobile Safari/Chrome don't navigate first. */
-  document.addEventListener('click', intercept, true);
-  document.addEventListener('touchend', intercept, true);
+  }, true);
 
   continueBtn.addEventListener('click', function(){
     const url = pendingUrl;
     closeModal();
-    if(url) openExternal(url);
+    if(url) window.open(url, '_blank', 'noopener');
   });
   cancelBtn.addEventListener('click', closeModal);
   const socialCloseBtn = document.getElementById('socialCloseBtn');
